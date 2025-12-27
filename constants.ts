@@ -26,7 +26,7 @@ export const PORTALS: PortalConfig[] = [
     title: 'Chakra',
     description: 'Alinhamento energético.',
     category: PortalCategory.PRESENCE,
-    icon: 'CircleDot',
+    icon: 'Flower2', // Representing the Lotus
     inputType: InputType.SELECTION,
     options: ['Raiz (Muladhara)', 'Sacro (Swadhisthana)', 'Plexo Solar (Manipura)', 'Coração (Anahata)', 'Garganta (Vishuddha)', 'Terceiro Olho (Ajna)', 'Coroa (Sahasrara)'],
     promptContext: 'O usuário foca neste Chakra. Explique brevemente o significado emocional e sugira uma visualização de cor ou afirmação simples. Português Brasileiro padrão, culto e sem erros de ortografia.',
@@ -194,7 +194,7 @@ export const PORTALS: PortalConfig[] = [
     title: 'Peregrinação',
     description: 'Lugares sagrados próximos.',
     category: PortalCategory.DEEP,
-    icon: 'Mountain', 
+    icon: 'Map', // Changed from Mountain to Map
     inputType: InputType.LOCATION,
     promptContext: 'INSTRUÇÃO PRIORITÁRIA DE LOCALIZAÇÃO:\n\n1. Comece a resposta EXATAMENTE com a frase: "Sintonizando energias em [NOME DA CIDADE/BAIRRO DETECTADO]...". Se a ferramenta de mapa não retornar a cidade correta, informe a cidade mais próxima encontrada.\n\n2. Liste 3 locais REAIS nas redondezas para visitação espiritual (Templos, Parques, Igrejas, Bibliotecas).\n\nFormato:\n\n1. **[Nome do Local]**\n   🗺️ *Endereço/Referência*\n   ✨ **Energia**: Por que visitar?\n   👁️ **Ritual**: Sugestão breve.\n\nSeja preciso. Encerre com uma bênção. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
@@ -233,7 +233,7 @@ export const PORTALS: PortalConfig[] = [
       1. Comece OBRIGATORIAMENTE com "Saudações, [Nome]".
       2. Linguagem simbólica, poética e clara.
       3. Nada de promessas absolutas ou fatalismo.
-      4. ORTOGRAFIA: Impecável. Sem erros como "Sudações".
+      4. ORTOGRAFIA: Impecável. Nunca escreva "Sudações".
       5. O Tarot é um mapa da psique.
 
       ESTRUTURA OBRIGATÓRIA DA RESPOSTA:
@@ -276,7 +276,7 @@ export const PORTALS: PortalConfig[] = [
     title: 'Números',
     description: 'A matemática divina.',
     category: PortalCategory.DEEP,
-    icon: 'Binary', 
+    icon: 'Hash', // Changed from Binary to Hash
     inputType: InputType.NONE,
     promptContext: 'Calcule o "Número do Momento" baseado na data de hoje e na vibração do nome do usuário. Explique o arquétipo desse número e sua mensagem para o usuário hoje. Dê ênfase ao misticismo e use português culto, correto e sem erros de ortografia.',
   },

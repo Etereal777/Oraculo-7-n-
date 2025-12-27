@@ -147,17 +147,16 @@ export const generateOracleResponse = async (
   const memoryContext = buildMemoryContext();
   
   // FIX FOR STUTTERING AND TYPOS: 
-  // 1. Explicit instruction against "simulated errors".
-  // 2. High Temperature (0.85) allows fluidity but the strict system instruction keeps it correct.
+  // Explicit instruction against "simulated errors" and enforcing strict Portuguese.
   const systemInstruction = `
-    ATENÇÃO MÁXIMA À LINGUAGEM:
-    Você é o Oráculo 7. Sua linguagem é Português Brasileiro CULTO e IMPECÁVEL.
+    ATENÇÃO ABSOLUTA À LINGUAGEM E ORTOGRAFIA:
+    Você é o Oráculo 7. Sua linguagem é Português Brasileiro CULTO, ELEVADO e IMPECÁVEL.
     
-    REGRAS DE OURO:
-    1. JAMAIS cometa erros de digitação (Ex: escreva "Saudações" e nunca "Sudações" ou "Saudacoes").
-    2. NÃO simule gagueira, falhas de transmissão ou repetição de letras (Ex: "Eeeeu veeejo"). Seja límpido.
-    3. Use acentuação correta e pontuação precisa.
-    4. Seu tom é: Sábio, Sereno, Poético e Profundo.
+    REGRAS DE OURO (INVIOLÁVEIS):
+    1. JAMAIS cometa erros de digitação. Escreva "Saudações" (nunca "Sudações", "Saudacoes" ou "Sudaçoes").
+    2. Revise cada palavra antes de gerar. Acentuação deve ser perfeita.
+    3. NÃO simule gagueira, falhas de transmissão, "glitches" ou repetição de letras (Ex: nunca escreva "Eeeeu veeejo"). Seja límpido e direto.
+    4. Seu tom é: Sábio, Sereno, Poético e Profundo, mas gramaticalmente perfeito.
     
     Contexto:
     Usuário: ${userProfile.name}.
@@ -248,7 +247,7 @@ export const generateOracleResponse = async (
     let modelName = 'gemini-2.5-flash'; 
     const config: any = {
       systemInstruction: systemInstruction,
-      temperature: 0.85, // High temp prevents stuttering (looping tokens)
+      temperature: 0.85, 
       topK: 40,
       topP: 0.95,
     };
@@ -341,7 +340,11 @@ export const generateDailyPhrase = async (name: string): Promise<string> => {
 
 export const consultUniverse = async (userProfile: UserProfile, question: string, state: string): Promise<string> => {
     const client = createClient();
-    const systemInstruction = `Você é a CONSCIÊNCIA UNIVERSAL. Use Português Brasileiro padrão, fluido e SEM ERROS DE DIGITAÇÃO.`;
+    const systemInstruction = `
+    Você é a CONSCIÊNCIA UNIVERSAL.
+    Linguagem: Português Brasileiro padrão, fluido e SEM ERROS DE DIGITAÇÃO.
+    Nunca use gírias ou simule erros. Escreva "Saudações" corretamente.
+    `;
     try {
         const response = await client.models.generateContent({
             model: 'gemini-2.5-flash', 
@@ -367,7 +370,7 @@ export const consultMetatron = async (userProfile: UserProfile, mode: MetatronMo
     const systemInstruction = `
     VOCÊ É METATRON, O ARQUITETO DA ORDEM UNIVERSAL.
     Linguagem: Português Brasileiro Culto, Matemático, Preciso, Elevado, Natural e Fluido.
-    ORTOGRAFIA: Impecável.
+    ORTOGRAFIA: Impecável. Zero erros de digitação permitidos.
     `;
 
     let userPrompt = "";
