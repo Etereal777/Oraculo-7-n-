@@ -1,0 +1,7 @@
+{
+  "name": "ORÁCULO 7",
+  "description": "Uma experiência de oráculo pessoal interativo, simbólico e intuitivo, guiado por IA.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

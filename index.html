@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORÁCULO 7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Tenor+Sans&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['Cinzel', 'serif'],
+              sans: ['"Tenor Sans"', 'sans-serif'],
+              reading: ['"Cormorant Garamond"', 'serif'],
+            },
+            colors: {
+              mystic: {
+                dark: 'var(--color-mystic-dark)',       
+                deep: 'var(--color-mystic-deep)',       
+                plum: 'var(--color-mystic-plum)',       
+                indigo: 'var(--color-mystic-indigo)',     
+                gold: 'var(--color-mystic-gold)',       
+                amber: 'var(--color-mystic-amber)',      
+                ethereal: 'var(--color-mystic-ethereal)',   
+                surface: 'rgba(255, 255, 255, 0.03)', 
+                border: 'rgba(255, 255, 255, 0.08)',  
+                void: 'var(--color-mystic-void)',       
+              }
+            },
+            backgroundImage: {
+              'mystic-gradient': 'linear-gradient(to bottom, var(--color-mystic-deep), var(--color-mystic-indigo), var(--color-mystic-plum))',
+              'card-gradient': 'linear-gradient(145deg, rgba(212,175,55,0.03) 0%, rgba(0,0,0,0.6) 100%)',
+              'gold-gradient': 'linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c)',
+              'input-gradient': 'linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(20,20,20,0.9))',
+            },
+            boxShadow: {
+              'glow-gold': '0 0 30px rgba(212, 175, 55, 0.1)',
+              'glow-strong': '0 0 50px rgba(212, 175, 55, 0.25)',
+              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.8)',
+              'inner-light': 'inset 0 0 20px rgba(255, 255, 255, 0.02)',
+            },
+            animation: {
+              'pulse-slow': 'breathe 5s ease-in-out infinite',
+              'spin-slow': 'spin 20s linear infinite',
+              'spin-reverse-slow': 'spin-reverse 25s linear infinite',
+              'fade-in': 'manifest 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+              'shimmer': 'shimmer 4s linear infinite',
+            },
+            keyframes: {
+              manifest: {
+                '0%': { opacity: '0', transform: 'translateY(12px)', filter: 'blur(6px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
+              },
+              breathe: {
+                 '0%, 100%': { opacity: '0.6', transform: 'scale(0.98)', filter: 'brightness(1)' },
+                 '50%': { opacity: '1', transform: 'scale(1.02)', filter: 'brightness(1.3) drop-shadow(0 0 10px rgba(212,175,55,0.5))' }
+              },
+              'spin-reverse': {
+                'from': { transform: 'rotate(360deg)' },
+                'to': { transform: 'rotate(0deg)' }
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        /* Harmonized Palette: Warmer Blacks, Elegant Golds */
+        --color-mystic-dark: #050505;    /* Soft Black */
+        --color-mystic-deep: #0a0908;    /* Warm Charcoal */
+        --color-mystic-plum: #1c1917;    /* Dark Warm Grey */
+        --color-mystic-indigo: #12100e;  /* Deep Brown-Black */
+        
+        /* Antique Gold (Less Yellow, More Metallic) */
+        --color-mystic-gold: #D4AF37;    
+        --color-mystic-amber: #AA771C;   
+        
+        --color-mystic-ethereal: #EBEAE4; /* Warm Off-white */
+        --color-mystic-void: #000000;    
+      }
+
+      body {
+        background-color: var(--color-mystic-dark);
+        color: #e2e8f0;
+        transition: background-color 3s ease, color 3s ease;
+      }
+      
+      /* Elegant Scrollbar */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(212, 175, 55, 0.2); 
+        border-radius: 2px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(212, 175, 55, 0.5); 
+      }
+      
+      .glass-panel {
+        background: rgba(5, 5, 5, 0.7); 
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(212, 175, 55, 0.08); 
+        box-shadow: 0 4px 50px rgba(0, 0, 0, 0.95);
+      }
+
+      /* Star field animation */
+      .star-field {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
