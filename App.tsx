@@ -14,6 +14,7 @@ import MetatronView from './components/MetatronView';
 import { GetIcon } from './components/Icons';
 import { Logo } from './components/Logo';
 import StarField from './components/StarField';
+import SpiritCursor from './components/SpiritCursor';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('ONBOARDING');
@@ -130,6 +131,9 @@ const App: React.FC = () => {
   return (
     <>
       <StarField />
+      
+      {/* Interactive Cursor Trail */}
+      <SpiritCursor />
       
       {/* --- MYSTIC TRANSITION OVERLAY --- */}
       {/* This element sits on top of everything (z-[100]) and fades in/out to mask View changes */}

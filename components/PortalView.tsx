@@ -659,11 +659,28 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
                 
                 {/* Generative Visual Display - Materialization Effect */}
                 {generatedVisual && (
-                    <div className="mb-8 rounded-xl overflow-hidden border border-mystic-gold/30 shadow-glow-gold relative animate-fade-in group">
-                        <img src={generatedVisual} alt="Visão Mística Gerada" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-1000" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+                    <div className={`
+                        mb-8 relative group animate-fade-in
+                        ${portal.id === 'tarot' 
+                            ? 'rounded-2xl border border-mystic-gold/60 shadow-[0_0_50px_rgba(212,175,55,0.25)] animate-[float_6s_ease-in-out_infinite] scale-[0.98]' 
+                            : 'rounded-xl border border-mystic-gold/30 shadow-glow-gold overflow-hidden'}
+                    `}>
+                        <img 
+                            src={generatedVisual} 
+                            alt="Visão Mística Gerada" 
+                            className={`w-full h-auto object-cover transition-all duration-1000
+                                ${portal.id === 'tarot' ? 'rounded-2xl opacity-100' : 'opacity-90 group-hover:opacity-100'}
+                            `} 
+                        />
+                        
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none rounded-xl"></div>
+                        
+                        {/* Label */}
                         <div className="absolute bottom-4 left-0 right-0 text-center">
-                            <span className="text-[10px] text-mystic-gold/80 font-serif tracking-[0.3em] uppercase drop-shadow-md border border-mystic-gold/20 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm">Visão Materializada</span>
+                            <span className="text-[10px] text-mystic-gold/80 font-serif tracking-[0.3em] uppercase drop-shadow-md border border-mystic-gold/20 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm">
+                                {portal.id === 'tarot' ? 'Arcano Revelado' : 'Visão Materializada'}
+                            </span>
                         </div>
                     </div>
                 )}

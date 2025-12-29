@@ -12,7 +12,8 @@ interface Props {
 
 const STATES = ['Confuso', 'Em expansão', 'Em silêncio', 'Em transição', 'Grato'];
 
-// --- AUDIO VISUALIZER COMPONENT ---
+// --- VISUAL COMPONENTS ---
+
 const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
     return (
         <div className="flex flex-col items-center justify-center py-12 gap-8">
@@ -36,6 +37,38 @@ const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
         </div>
     );
 };
+
+// New Singularity Component (The Black Hole)
+const Singularity: React.FC<{ mode: 'IDLE' | 'ACTIVE' | 'THINKING' }> = ({ mode }) => {
+    return (
+        <div className="relative w-64 h-64 flex items-center justify-center">
+            {/* The Event Horizon (Void Core) */}
+            <div className={`absolute z-20 w-24 h-24 bg-black rounded-full shadow-[0_0_50px_rgba(0,0,0,1)] transition-transform duration-1000 ${mode === 'THINKING' ? 'scale-90' : 'scale-100'}`}></div>
+
+            {/* The Accretion Disk (Spinning Gold) */}
+            <div className={`
+                absolute z-10 w-full h-full rounded-full 
+                bg-[conic-gradient(from_0deg,transparent,transparent,rgba(212,175,55,0.1),rgba(212,175,55,0.8),transparent)] 
+                blur-sm opacity-80 mix-blend-screen
+                transition-all duration-[2000ms]
+                ${mode === 'THINKING' ? 'animate-[spin_0.5s_linear_infinite]' : 'animate-[spin_10s_linear_infinite]'}
+            `}></div>
+            
+            {/* Secondary Disk (Offset) */}
+             <div className={`
+                absolute z-10 w-[90%] h-[90%] rounded-full 
+                bg-[conic-gradient(from_180deg,transparent,transparent,rgba(232,232,227,0.1),rgba(255,255,255,0.4),transparent)] 
+                blur-md opacity-50 mix-blend-overlay
+                ${mode === 'THINKING' ? 'animate-[spin_1s_linear_infinite_reverse]' : 'animate-[spin_15s_linear_infinite_reverse]'}
+            `}></div>
+
+            {/* Gravity Lens Effect (Outer distortion) */}
+            <div className={`absolute z-0 w-[120%] h-[120%] border border-white/5 rounded-full opacity-30 ${mode === 'THINKING' ? 'scale-110' : 'scale-100 animate-pulse-slow'}`}></div>
+        </div>
+    );
+};
+
+// -------------------------
 
 const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
   const [step, setStep] = useState<'ENTRY' | 'INPUT' | 'CONNECTING' | 'REVEALED'>('ENTRY');
@@ -221,9 +254,8 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
         
         {step === 'ENTRY' && (
           <div className="text-center animate-fade-in flex flex-col items-center">
-             <div className="mb-12 relative">
-                <div className="absolute inset-0 bg-mystic-ethereal/20 blur-[60px] rounded-full animate-pulse-slow"></div>
-                <GetIcon name="Orbit" className="w-24 h-24 text-mystic-ethereal/90 animate-[spin_20s_linear_infinite] relative z-10" />
+             <div className="mb-12 relative scale-125">
+                <Singularity mode="IDLE" />
              </div>
              
              <h2 className="text-4xl md:text-6xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-mystic-ethereal to-gray-400 mb-6 tracking-[0.2em] drop-shadow-2xl">
@@ -248,7 +280,9 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
         {step === 'INPUT' && (
           <div className="w-full animate-fade-in space-y-12">
              <div className="text-center">
-                <GetIcon name="Orbit" className="w-10 h-10 text-mystic-ethereal/50 mx-auto mb-6" />
+                <div className="mb-6 relative scale-50 h-24 flex items-center justify-center">
+                    <Singularity mode="ACTIVE" />
+                </div>
                 <h3 className="font-serif text-3xl text-mystic-ethereal tracking-wide">O que você deseja compreender?</h3>
              </div>
 
@@ -294,14 +328,14 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
         )}
 
         {step === 'CONNECTING' && (
-           <div className="text-center animate-pulse-slow">
+           <div className="text-center animate-pulse-slow flex flex-col items-center">
+              <div className="mb-12 relative scale-110">
+                 {/* SINGULARITY PULSING FAST */}
+                 <Singularity mode="THINKING" />
+              </div>
+              
               <div className="w-64 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent mb-8 mx-auto"></div>
               <p className="font-serif text-xl tracking-[0.3em] text-gray-400 uppercase">O Universo Escuta</p>
-              <div className="mt-8 flex justify-center space-x-4">
-                 <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                 <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                 <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
-              </div>
            </div>
         )}
 
