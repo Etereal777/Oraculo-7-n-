@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PortalConfig, InputType, UserProfile, Reading } from '../types';
 import { GetIcon } from './Icons';
-import { generateOracleResponse, generateAudioReading, generateMysticImage } from '../services/geminiService';
+import { generateOracleResponse, generateAudioReading, generateMysticImage, calculateTzolkinKin } from '../services/geminiService';
 import { saveReading } from '../services/storage';
 import { soundManager } from '../services/soundService';
 import { TAROT_DECK } from '../data/tarotData';
@@ -105,84 +105,6 @@ const RitualBreath: React.FC<{ variant?: 'gold' | 'shadow' }> = ({ variant = 'go
     );
 }
 
-// --- INTEGRATION TIMER COMPONENT ---
-const IntegrationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-    const [timeLeft, setTimeLeft] = useState(60);
-    const [phase, setPhase] = useState("Respire");
-    const totalTime = 60;
-    
-    // Circle Math
-    const radius = 120;
-    const circumference = 2 * Math.PI * radius; // approx 754
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    soundManager.playReveal(); // End chime
-                    onClose();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        // Breathing cycle text
-        const textTimer = setInterval(() => {
-            setPhase(prev => prev === "Respire" ? "Integre" : "Respire");
-        }, 5000);
-
-        return () => { clearInterval(timer); clearInterval(textTimer); }
-    }, [onClose]);
-
-    // Calculate offset: Start at 0 (Full), End at circumference (Empty)
-    const strokeDashoffset = circumference * (1 - (timeLeft / totalTime));
-
-    return (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center animate-fade-in">
-             <div className="relative w-72 h-72 flex items-center justify-center">
-                 {/* Glow behind */}
-                 <div className="absolute inset-0 bg-mystic-gold/5 rounded-full blur-3xl animate-pulse-slow"></div>
-                 
-                 {/* Timer Text */}
-                 <div className="absolute z-10 text-4xl font-serif text-mystic-gold tracking-widest">{timeLeft}</div>
-
-                 <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 260 260">
-                     {/* Background Track */}
-                     <circle 
-                        cx="130" 
-                        cy="130" 
-                        r={radius} 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        fill="none" 
-                        className="text-white/10" 
-                     />
-                     {/* Progress Bar */}
-                     <circle 
-                        cx="130" 
-                        cy="130" 
-                        r={radius} 
-                        stroke="currentColor" 
-                        strokeWidth="4" 
-                        fill="none" 
-                        className="text-mystic-gold transition-all duration-1000 ease-linear" 
-                        strokeDasharray={circumference} 
-                        strokeDashoffset={strokeDashoffset}
-                        strokeLinecap="round"
-                     />
-                 </svg>
-             </div>
-             
-             <h3 className="mt-12 text-2xl font-serif text-mystic-ethereal tracking-[0.4em] uppercase animate-pulse">{phase}</h3>
-             <p className="mt-4 text-xs font-sans text-gray-500 tracking-[0.3em] uppercase">Permita que a verdade assente</p>
-             
-             <button onClick={onClose} className="mt-12 px-6 py-2 border border-white/10 rounded-full text-[10px] uppercase tracking-widest text-gray-500 hover:text-white hover:border-white/30 transition-colors">Encerrar Ritual</button>
-        </div>
-    );
-};
-
 // --- AUDIO VISUALIZER COMPONENT ---
 const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
     return (
@@ -230,9 +152,6 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
   const [generatingAudio, setGeneratingAudio] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Integration Mode
-  const [showIntegration, setShowIntegration] = useState(false);
-  
   // Voice Input State
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -391,9 +310,14 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
     else if (portal.id === 'sombra') {
          visualSubject = `The integration of shadow and light, jungian psychology art, eclipse, ethereal, dark and gold contrast`;
     }
-    else if (portal.id === 'tzolkin') {
-         // TZOLKIN VISUAL TRIGGER
-         visualSubject = `Ancient Mayan Tzolkin Glyph carved in golden obsidian stone, mystical symbols, kin energy, aztec patterns, divine calendar`;
+    else if (portal.id === 'tzolkin' && finalText) {
+         // TZOLKIN VISUAL TRIGGER (Refined)
+         const kinData = calculateTzolkinKin(finalText);
+         if (kinData) {
+            visualSubject = `Mystical artistic representation of the Mayan Seal ${kinData.seal} colored ${kinData.color}. Ancient stone texture, bioluminescent glow, sacred geometry background, cinematic lighting, 8k, unreal engine 5 style, deep spiritual atmosphere.`;
+         } else {
+            visualSubject = `Ancient Mayan Tzolkin Glyph carved in golden obsidian stone, mystical symbols, aztec patterns, divine calendar, cinematic lighting`;
+         }
     }
     else if (portal.id === 'numeros') {
          visualSubject = `Sacred geometry pattern representing divine mathematics, golden ratio, fibonacci spiral, glowing lines in dark void`;
@@ -670,7 +594,6 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-      {showIntegration && <IntegrationModal onClose={() => setShowIntegration(false)} />}
       
       <div className="absolute inset-0 bg-[#03000a]/95 backdrop-blur-3xl transition-opacity duration-1000"></div>
       
@@ -785,7 +708,6 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
                     <button onClick={handleDownloadAudio} disabled={!audioBase64 || generatingAudio} className={`flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5 ${!audioBase64 ? 'opacity-50 cursor-not-allowed' : ''}`}><GetIcon name="Download" className="w-3 h-3" /><span>Baixar Voz</span></button>
                     
                     <button onClick={handleMaterialize} className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5"><GetIcon name="Camera" className="w-3 h-3" /><span>Materializar</span></button>
-                    <button onClick={() => setShowIntegration(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5"><GetIcon name="CircleDot" className="w-3 h-3" /><span>Integrar</span></button>
                 </div>
 
                 <div className="mt-6 flex justify-center">

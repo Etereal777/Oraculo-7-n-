@@ -23,7 +23,7 @@ const TZOLKIN_TONES = [
   "Rítmico", "Ressonante", "Galáctico", "Solar", "Planetário", "Espectral", "Cristal"
 ]; // Index 0 is Cósmico (13), then 1..12
 
-const calculateTzolkinKin = (dateStr: string) => {
+export const calculateTzolkinKin = (dateStr: string) => {
     if (!dateStr) return null;
     
     // Create date as UTC to avoid timezone shifts
