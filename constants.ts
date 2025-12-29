@@ -75,7 +75,7 @@ export const PORTALS: PortalConfig[] = [
     title: 'Ciclo',
     description: 'O pulso do seu momento.',
     category: PortalCategory.SUBTLE,
-    icon: 'RefreshCw', // Movimento cíclico/Roda
+    icon: 'Moon', // Fases da lua
     inputType: InputType.NONE,
     promptContext: 'Intuitivamente, identifique se é momento de Início, Meio ou Fim. Dê uma orientação breve sobre a natureza deste ponto do ciclo. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },

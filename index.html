@@ -17,54 +17,56 @@
             },
             colors: {
               mystic: {
-                dark: 'var(--color-mystic-dark)',       
-                deep: 'var(--color-mystic-deep)',       
-                plum: 'var(--color-mystic-plum)',       
-                indigo: 'var(--color-mystic-indigo)',     
-                gold: 'var(--color-mystic-gold)',       
-                amber: 'var(--color-mystic-amber)',      
-                ethereal: 'var(--color-mystic-ethereal)',   
-                surface: 'rgba(255, 255, 255, 0.03)', 
-                border: 'rgba(255, 255, 255, 0.08)',  
-                void: 'var(--color-mystic-void)',       
+                dark: '#030005',       /* Absolute Void with subtle warmth */
+                deep: '#0a050e',       /* Deep Purple/Black base */
+                plum: '#1a1025',       /* Rich Shadow */
+                indigo: '#151020',     /* Cold Shadow */
+                gold: '#D4AF37',       /* Antique Gold */
+                amber: '#B8860B',      /* Dark Gold */
+                ethereal: '#E8E8E3',   /* Bone White */
+                surface: 'rgba(15, 10, 20, 0.4)', 
+                border: 'rgba(212, 175, 55, 0.15)',  
+                void: '#000000',       
               }
             },
             backgroundImage: {
-              'mystic-gradient': 'linear-gradient(to bottom, var(--color-mystic-deep), var(--color-mystic-indigo), var(--color-mystic-plum))',
-              'card-gradient': 'linear-gradient(145deg, rgba(212,175,55,0.03) 0%, rgba(0,0,0,0.6) 100%)',
+              'mystic-gradient': 'radial-gradient(circle at center, #1a1025 0%, #030005 100%)',
+              'card-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%)',
               'gold-gradient': 'linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c)',
-              'input-gradient': 'linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(20,20,20,0.9))',
+              'input-gradient': 'linear-gradient(to bottom, rgba(5,5,5,0.6), rgba(0,0,0,0.8))',
+              'glow-radial': 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(0,0,0,0) 70%)',
             },
             boxShadow: {
-              'glow-gold': '0 0 30px rgba(212, 175, 55, 0.1)',
-              'glow-strong': '0 0 50px rgba(212, 175, 55, 0.25)',
-              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.8)',
-              'inner-light': 'inset 0 0 20px rgba(255, 255, 255, 0.02)',
+              'glow-gold': '0 0 20px rgba(212, 175, 55, 0.15), inset 0 0 10px rgba(212, 175, 55, 0.05)',
+              'glow-strong': '0 0 40px rgba(212, 175, 55, 0.3)',
+              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.9)',
+              'inner-light': 'inset 0 1px 1px rgba(255, 255, 255, 0.05)',
+              'void-depth': 'inset 0 0 50px rgba(0,0,0,0.8)',
             },
             animation: {
-              'pulse-slow': 'breathe 6s ease-in-out infinite', /* Deep Golden Breath */
-              'spin-slow': 'spin 30s linear infinite',
-              'spin-reverse-slow': 'spin-reverse 35s linear infinite',
-              'fade-in': 'manifest 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards', /* Ethereal entry */
-              'fade-in-delayed': 'manifest 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards',
+              'pulse-slow': 'breathe 8s ease-in-out infinite', 
+              'spin-slow': 'spin 60s linear infinite', 
+              'spin-reverse-slow': 'spin-reverse 70s linear infinite',
+              'fade-in': 'manifest 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+              'fade-in-delayed': 'manifest 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards',
               'shimmer': 'shimmer 6s linear infinite',
               'float': 'float 12s ease-in-out infinite',
             },
             keyframes: {
               manifest: {
-                '0%': { opacity: '0', transform: 'translateY(20px)', filter: 'blur(10px)' },
+                '0%': { opacity: '0', transform: 'translateY(8px)', filter: 'blur(8px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
               },
               breathe: {
                  '0%, 100%': { 
-                    opacity: '0.8', 
+                    opacity: '0.6', 
                     transform: 'scale(1)', 
-                    filter: 'drop-shadow(0 0 2px rgba(212,175,55,0.2)) brightness(1)' 
+                    filter: 'drop-shadow(0 0 0 rgba(212,175,55,0))' 
                  },
                  '50%': { 
                     opacity: '1', 
-                    transform: 'scale(1.05)', 
-                    filter: 'drop-shadow(0 0 15px rgba(212,175,55,0.7)) brightness(1.2)' 
+                    transform: 'scale(1.02)', 
+                    filter: 'drop-shadow(0 0 15px rgba(212,175,55,0.2))' 
                  }
               },
               'spin-reverse': {
@@ -77,7 +79,7 @@
               },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-15px)' }
+                '50%': { transform: 'translateY(-10px)' }
               }
             }
           }
@@ -86,24 +88,15 @@
     </script>
     <style>
       :root {
-        /* Harmonized Palette: Warmer Blacks, Elegant Golds */
-        --color-mystic-dark: #050505;    /* Soft Black */
-        --color-mystic-deep: #0a0908;    /* Warm Charcoal */
-        --color-mystic-plum: #1c1917;    /* Dark Warm Grey */
-        --color-mystic-indigo: #12100e;  /* Deep Brown-Black */
-        
-        /* Antique Gold (Less Yellow, More Metallic) */
+        --color-mystic-dark: #030005;
         --color-mystic-gold: #D4AF37;    
-        --color-mystic-amber: #AA771C;   
-        
-        --color-mystic-ethereal: #EBEAE4; /* Warm Off-white */
-        --color-mystic-void: #000000;    
       }
 
       body {
         background-color: var(--color-mystic-dark);
-        color: #e2e8f0;
-        transition: background-color 3s ease, color 3s ease;
+        background-image: radial-gradient(circle at 50% 0%, #151020 0%, #030005 70%);
+        color: #E8E8E3;
+        min-height: 100vh;
       }
       
       /* Elegant Scrollbar */
@@ -122,11 +115,17 @@
       }
       
       .glass-panel {
-        background: rgba(5, 5, 5, 0.7); 
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(212, 175, 55, 0.08); 
-        box-shadow: 0 4px 50px rgba(0, 0, 0, 0.95);
+        background: rgba(10, 5, 15, 0.4); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05); 
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .input-mirror {
+        background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+        border: 1px solid rgba(212, 175, 55, 0.1);
       }
 
       /* Star field animation */
@@ -143,12 +142,6 @@
         position: absolute;
         background: white;
         border-radius: 50%;
-        /* Animation duration and delay are set via JS for randomness */
-      }
-      
-      @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
       }
     </style>
   <script type="importmap">

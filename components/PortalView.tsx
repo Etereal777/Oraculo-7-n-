@@ -483,7 +483,7 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
       try {
           const element = captureRef.current;
           const canvas = await html2canvas(element, {
-              backgroundColor: '#050406',
+              backgroundColor: '#030005',
               scale: 2, // High res
               useCORS: true, // Needed for external images
               logging: false
@@ -546,7 +546,7 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
         <div className="mt-6 w-full animate-fade-in flex flex-col items-center">
           <div className="w-full relative group">
             <div className={`absolute inset-0 bg-gradient-to-b from-mystic-indigo/20 to-transparent transition-opacity duration-700 rounded-xl pointer-events-none ${isListening ? 'opacity-100 border border-mystic-gold/30' : 'opacity-0 group-hover:opacity-100'}`}></div>
-            <textarea value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder={isListening ? "Ouvindo sua voz..." : placeholderText} className={`w-full bg-input-gradient border rounded-xl p-8 text-mystic-ethereal text-2xl font-reading italic leading-relaxed focus:outline-none focus:border-mystic-gold/40 focus:shadow-glow-gold transition-all duration-500 mb-6 min-h-[160px] placeholder-mystic-ethereal/20 resize-none shadow-inner-light ${isListening ? 'border-mystic-gold/50 shadow-glow-gold bg-mystic-gold/5' : 'border-white/10'}`}/>
+            <textarea value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder={isListening ? "Ouvindo sua voz..." : placeholderText} className={`w-full input-mirror rounded-xl p-8 text-mystic-ethereal text-2xl font-reading italic leading-relaxed focus:outline-none focus:border-mystic-gold/40 focus:shadow-glow-gold transition-all duration-500 mb-6 min-h-[160px] placeholder-mystic-ethereal/20 resize-none ${isListening ? 'border-mystic-gold/50 shadow-glow-gold bg-mystic-gold/5' : 'border-white/10'}`}/>
             <div className="absolute bottom-10 right-4 z-20"><button onClick={toggleListening} className={`p-3 rounded-full transition-all duration-300 shadow-lg border backdrop-blur-md ${isListening ? 'bg-red-500/20 border-red-500 text-red-300 animate-pulse' : 'bg-black/40 border-white/10 text-mystic-gold/70 hover:text-mystic-gold hover:border-mystic-gold/40 hover:bg-mystic-gold/10'}`}><GetIcon name={isListening ? "MicOff" : "Mic"} className="w-5 h-5" /></button></div>
           </div>
           <button onClick={handleConsult} disabled={!inputVal} className={`w-full py-4 rounded-lg font-serif font-bold tracking-[0.25em] text-sm transition-all duration-500 ${inputVal ? 'bg-mystic-gold text-mystic-dark shadow-glow-gold hover:scale-[1.01]' : 'bg-white/5 border border-white/5 text-white/20 cursor-not-allowed'}`}>REFLETIR</button>
@@ -560,7 +560,7 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
                  <input 
                     type="date" 
                     onChange={(e) => setInputVal(e.target.value)}
-                    className="w-full bg-[#0E0E0E] border border-white/10 rounded-xl py-6 px-4 text-center text-mystic-gold text-2xl font-reading focus:outline-none focus:border-mystic-gold/30 focus:shadow-glow-gold transition-all duration-500 [color-scheme:dark] uppercase tracking-widest cursor-pointer hover:bg-[#151515]"
+                    className="w-full bg-[#030005] border border-white/10 rounded-xl py-6 px-4 text-center text-mystic-gold text-2xl font-reading focus:outline-none focus:border-mystic-gold/30 focus:shadow-glow-gold transition-all duration-500 [color-scheme:dark] uppercase tracking-widest cursor-pointer hover:bg-[#0a050e]"
                  />
                  <button onClick={handleConsult} disabled={!inputVal} className={`w-full mt-6 py-4 rounded-lg font-serif font-bold tracking-[0.25em] text-sm transition-all duration-500 ${inputVal ? 'bg-mystic-gold text-mystic-dark shadow-glow-gold hover:scale-[1.01]' : 'bg-white/5 border border-white/5 text-white/20 cursor-not-allowed'}`}>CALCULAR KIN</button>
             </div>
@@ -595,7 +595,7 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
       
-      <div className="absolute inset-0 bg-[#03000a]/95 backdrop-blur-3xl transition-opacity duration-1000"></div>
+      <div className="absolute inset-0 bg-[#030005]/98 backdrop-blur-3xl transition-opacity duration-1000"></div>
       
       <div className="absolute top-6 left-6 z-50">
         <button onClick={handleBack} className="p-3 rounded-full hover:bg-white/5 text-mystic-ethereal/40 hover:text-white transition-colors"><span className="sr-only">Voltar</span><GetIcon name="ChevronLeft" className="w-6 h-6" /></button>
@@ -611,8 +611,25 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
           {status === 'THINKING' ? (
                <RitualBreath variant={portal.id === 'sombra' ? 'shadow' : 'gold'} />
           ) : (
-             <div className="p-5 rounded-full border border-white/10 bg-gradient-to-br from-white/5 to-transparent shadow-[0_0_30px_rgba(0,0,0,0.5)] relative">
-               <GetIcon name={portal.icon} className="w-10 h-10 text-mystic-gold relative z-10 opacity-90" />
+             <div className="relative group cursor-default">
+                 {/* 1. Breathing Back Glow */}
+                 <div className="absolute inset-0 bg-mystic-gold/20 rounded-full blur-[30px] animate-pulse-slow"></div>
+
+                 {/* 2. Rotating Energy Ring - Very Subtle */}
+                 <div className="absolute -inset-1 rounded-full border border-mystic-gold/10 border-t-mystic-gold/30 animate-[spin_12s_linear_infinite] opacity-50"></div>
+
+                 {/* 3. Container */}
+                 <div className="relative p-5 rounded-full border border-white/10 bg-[#0a050e] shadow-2xl overflow-hidden">
+                     
+                     {/* 4. Subtle Inner Gradient (Ethereal Sheen) */}
+                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-mystic-gold/5 to-transparent opacity-50 animate-pulse-slow"></div>
+
+                     {/* 5. The Icon */}
+                     <GetIcon 
+                       name={portal.icon} 
+                       className="w-10 h-10 text-mystic-gold relative z-10 opacity-90 drop-shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-transform duration-1000 group-hover:scale-105" 
+                     />
+                 </div>
              </div>
           )}
         </div>
@@ -633,16 +650,16 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
         )}
 
         {status === 'REVEALED' && (
-          <div className="glass-panel w-full rounded-2xl border-t border-white/10 shadow-2xl animate-fade-in relative overflow-hidden">
+          <div className="glass-panel w-full rounded-2xl border-t border-white/10 shadow-void-depth animate-fade-in relative overflow-hidden bg-opacity-40">
              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-mystic-gold/50 to-transparent"></div>
              
-             <div className="bg-[#08051a]/60 backdrop-blur-xl p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+             <div className="bg-[#030005]/80 backdrop-blur-xl p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 
                 {/* Generative Visual Display - Materialization Effect */}
                 {generatedVisual && (
                     <div className="mb-8 rounded-xl overflow-hidden border border-mystic-gold/30 shadow-glow-gold relative animate-fade-in group">
                         <img src={generatedVisual} alt="Visão Mística Gerada" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-1000" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
                         <div className="absolute bottom-4 left-0 right-0 text-center">
                             <span className="text-[10px] text-mystic-gold/80 font-serif tracking-[0.3em] uppercase drop-shadow-md border border-mystic-gold/20 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm">Visão Materializada</span>
                         </div>
@@ -719,8 +736,8 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
       </div>
 
       {/* Hidden Card Structure for Export - Refined for Audio-First Look */}
-      <div ref={captureRef} style={{ position: 'fixed', left: '-9999px', top: '0', width: '540px', height: '960px', backgroundColor: '#050406', zIndex: -10 }} className="flex flex-col items-center justify-between p-12 text-center">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-black to-[#050406]"></div>
+      <div ref={captureRef} style={{ position: 'fixed', left: '-9999px', top: '0', width: '540px', height: '960px', backgroundColor: '#030005', zIndex: -10 }} className="flex flex-col items-center justify-between p-12 text-center">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a050e] via-black to-[#030005]"></div>
           
           {/* Border Decoration */}
           <div className="absolute inset-4 border border-mystic-gold/20 rounded-2xl pointer-events-none"></div>
