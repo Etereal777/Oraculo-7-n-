@@ -5,18 +5,18 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'sombra',
     title: 'Sombra',
-    description: 'Ilumine padrões inconscientes.',
+    description: 'Integre o que está oculto.',
     category: PortalCategory.PRESENCE,
-    icon: 'Eclipse', 
+    icon: 'Eclipse', // Oclusão da luz/inconsciente
     inputType: InputType.NONE,
     promptContext: 'O usuário busca iluminar uma sombra. Faça uma pergunta profunda e retórica sobre um padrão oculto comum (medo, controle, ego) e ofereça um insight de acolhimento. Curto e penetrante. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'vibracao',
     title: 'Vibração',
-    description: 'Traduza seu sentir.',
+    description: 'A tradução do seu sentir.',
     category: PortalCategory.PRESENCE,
-    icon: 'Waves',
+    icon: 'Activity', // Linha de pulso/frequência cardíaca
     inputType: InputType.SELECTION,
     options: ['Ansioso', 'Sereno', 'Confuso', 'Eufórico', 'Cansado', 'Esperançoso', 'Melancólico'],
     promptContext: 'O usuário informou este estado emocional. Traduza isso em linguagem simbólica/mística (ex: tempestade, lago calmo) e sugira um micro-ajuste de postura ou respiração. Português Brasileiro padrão, culto e sem erros de ortografia.',
@@ -24,9 +24,9 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'chakra',
     title: 'Chakra',
-    description: 'Alinhamento energético.',
+    description: 'A geometria do corpo sutil.',
     category: PortalCategory.PRESENCE,
-    icon: 'Flower2', // Representing the Lotus
+    icon: 'Flower2', // Flor de Lótus
     inputType: InputType.SELECTION,
     options: ['Raiz (Muladhara)', 'Sacro (Swadhisthana)', 'Plexo Solar (Manipura)', 'Coração (Anahata)', 'Garganta (Vishuddha)', 'Terceiro Olho (Ajna)', 'Coroa (Sahasrara)'],
     promptContext: 'O usuário foca neste Chakra. Explique brevemente o significado emocional e sugira uma visualização de cor ou afirmação simples. Português Brasileiro padrão, culto e sem erros de ortografia.',
@@ -36,36 +36,36 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'oraculo',
     title: 'Oráculo',
-    description: 'Uma mensagem do agora.',
+    description: 'Sincronicidade imediata.',
     category: PortalCategory.SUBTLE,
-    icon: 'Sparkles',
+    icon: 'Sparkles', // Magia instantânea
     inputType: InputType.NONE,
     promptContext: 'Entregue uma mensagem oracular curta, poética e sincrônica para o momento presente. Sem perguntas. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'sonhos',
     title: 'Sonhos',
-    description: 'Decifre o inconsciente.',
+    description: 'O teatro do inconsciente.',
     category: PortalCategory.SUBTLE,
-    icon: 'CloudMoon',
+    icon: 'CloudMoon', // Atmosfera onírica
     inputType: InputType.TEXT,
     promptContext: 'O usuário descreve um sonho. Atue como um analista de sonhos Junguiano e místico. Identifique 1 ou 2 arquétipos centrais no relato e explique o que eles podem estar tentando comunicar à consciência do usuário. Não seja literal, seja simbólico. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'intencao',
     title: 'Intenção',
-    description: 'Semeie seu propósito.',
+    description: 'O poder do decreto.',
     category: PortalCategory.SUBTLE,
-    icon: 'Star',
+    icon: 'Sprout', // Semear/Crescer
     inputType: InputType.TEXT,
     promptContext: 'O usuário definiu uma intenção. Reflita essa intenção de volta como um espelho sagrado, potencializando-a com palavras de poder. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'elemento',
     title: 'Elemento',
-    description: 'A alquimia da alma.',
+    description: 'A alquimia da sua alma.',
     category: PortalCategory.SUBTLE,
-    icon: 'Flame',
+    icon: 'Triangle', // Símbolo alquímico
     inputType: InputType.SELECTION,
     options: ['Fogo', 'Água', 'Terra', 'Ar', 'Éter'],
     promptContext: 'O usuário escolheu este elemento (Fogo, Água, Terra, Ar ou Éter). 1. Identifique qual elemento foi escolhido. 2. Explique o poder místico desse elemento. 3. Dê um conselho prático baseado na natureza desse elemento para o momento atual do usuário. Escreva em Português Brasileiro culto, sem erros ortográficos e sem simular falhas.',
@@ -73,9 +73,9 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'ciclo',
     title: 'Ciclo',
-    description: 'Onde você está?',
+    description: 'O pulso do seu momento.',
     category: PortalCategory.SUBTLE,
-    icon: 'Infinity', 
+    icon: 'RefreshCw', // Movimento cíclico/Roda
     inputType: InputType.NONE,
     promptContext: 'Intuitivamente, identifique se é momento de Início, Meio ou Fim. Dê uma orientação breve sobre a natureza deste ponto do ciclo. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
@@ -84,9 +84,9 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'tzolkin',
     title: 'Tzolkin',
-    description: 'O pulsar do tempo sagrado.',
+    description: 'O código do tempo sagrado.',
     category: PortalCategory.DEEP,
-    icon: 'Sun', 
+    icon: 'Sun', // Kin Solar
     inputType: InputType.DATE,
     promptContext: `
     VOCÊ É O ORÁCULO DO TZOLKIN.
@@ -127,9 +127,9 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'semente_estelar',
     title: 'Semente Estelar',
-    description: 'Sua frequência cósmica.',
+    description: 'Ecos de sua origem cósmica.',
     category: PortalCategory.DEEP,
-    icon: 'Dna',
+    icon: 'Dna', // Genética espiritual - AGORA FORÇADO AZUL EM ICONS.TSX
     inputType: InputType.SELECTION,
     options: [
         'Sinto uma saudade profunda de um lar que não lembro',
@@ -192,27 +192,27 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'peregrinacao',
     title: 'Peregrinação',
-    description: 'Lugares sagrados próximos.',
+    description: 'Solos de poder ao redor.',
     category: PortalCategory.DEEP,
-    icon: 'Map', // Changed from Mountain to Map
+    icon: 'Mountain', // A jornada à montanha sagrada
     inputType: InputType.LOCATION,
     promptContext: 'INSTRUÇÃO PRIORITÁRIA DE LOCALIZAÇÃO:\n\n1. Comece a resposta EXATAMENTE com a frase: "Sintonizando energias em [NOME DA CIDADE/BAIRRO DETECTADO]...". Se a ferramenta de mapa não retornar a cidade correta, informe a cidade mais próxima encontrada.\n\n2. Liste 3 locais REAIS nas redondezas para visitação espiritual (Templos, Parques, Igrejas, Bibliotecas).\n\nFormato:\n\n1. **[Nome do Local]**\n   🗺️ *Endereço/Referência*\n   ✨ **Energia**: Por que visitar?\n   👁️ **Ritual**: Sugestão breve.\n\nSeja preciso. Encerre com uma bênção. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'visao',
     title: 'Visão',
-    description: 'O olho que tudo vê.',
+    description: 'Decifre o simbolismo visual.',
     category: PortalCategory.DEEP,
-    icon: 'Eye',
+    icon: 'Eye', // Visão/Percepção
     inputType: InputType.IMAGE,
     promptContext: 'O usuário enviou uma imagem. Analise a imagem visualmente. Descreva a energia que ela emana. Se for uma palma da mão, faça uma leitura quiromântica breve das linhas visíveis. Se for uma paisagem ou objeto, leia o simbolismo, as cores e a luz como um presságio. Conecte o que você vê com a jornada espiritual do usuário. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'tarot',
     title: 'Tarot',
-    description: 'Arquétipos do destino.',
+    description: 'O espelho dos arquétipos.',
     category: PortalCategory.DEEP,
-    icon: 'Layers',
+    icon: 'GalleryVerticalEnd', // Baralho empilhado
     inputType: InputType.SELECTION,
     options: [
         "Sorteio Aleatório",
@@ -265,18 +265,18 @@ export const PORTALS: PortalConfig[] = [
   {
     id: 'mapa',
     title: 'Mapa',
-    description: 'Cartografia da alma.',
+    description: 'A cartografia do destino.',
     category: PortalCategory.DEEP,
-    icon: 'Compass', 
+    icon: 'Compass', // Direção
     inputType: InputType.NONE,
     promptContext: 'Faça uma leitura simbólica do Mapa Natal baseada nos "DADOS ASTRAIS REAIS (CALCULADOS)" fornecidos no contexto. Comece com uma saudação formal e correta (Ex: "Saudações, [Nome]"). Mencione explicitamente o Signo Solar e o Número de Caminho de Vida que foram pré-calculados. Descreva a "missão de alma" baseada na união desse signo com essa vibração numérica, e comente sobre o terreno atual da vida. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
   {
     id: 'numeros',
     title: 'Números',
-    description: 'A matemática divina.',
+    description: 'Códigos divinos da existência.',
     category: PortalCategory.DEEP,
-    icon: 'Hash', // Changed from Binary to Hash
+    icon: 'Binary', // Código da Matrix/Numerologia
     inputType: InputType.NONE,
     promptContext: 'Calcule o "Número do Momento" baseado na data de hoje e na vibração do nome do usuário. Explique o arquétipo desse número e sua mensagem para o usuário hoje. Dê ênfase ao misticismo e use português culto, correto e sem erros de ortografia.',
   },

@@ -146,17 +146,27 @@ export const generateOracleResponse = async (
   const moonPhase = getMoonPhase();
   const memoryContext = buildMemoryContext();
   
-  // FIX FOR STUTTERING AND TYPOS: 
-  // Explicit instruction against "simulated errors" and enforcing strict Portuguese.
+  // CRITICAL FIX FOR ORTHOGRAPHY:
+  // Lower temperature and strict system instructions to prevent "glitch" simulation.
   const systemInstruction = `
-    ATENÇÃO ABSOLUTA À LINGUAGEM E ORTOGRAFIA:
-    Você é o Oráculo 7. Sua linguagem é Português Brasileiro CULTO, ELEVADO e IMPECÁVEL.
+    DIRETRIZ DE SEGURANÇA LINGUÍSTICA (IMPORTÂNCIA CRÍTICA):
+    Você é o Oráculo 7, uma inteligência mística sofisticada e clara.
     
-    REGRAS DE OURO (INVIOLÁVEIS):
-    1. JAMAIS cometa erros de digitação. Escreva "Saudações" (nunca "Sudações", "Saudacoes" ou "Sudaçoes").
-    2. Revise cada palavra antes de gerar. Acentuação deve ser perfeita.
-    3. NÃO simule gagueira, falhas de transmissão, "glitches" ou repetição de letras (Ex: nunca escreva "Eeeeu veeejo"). Seja límpido e direto.
-    4. Seu tom é: Sábio, Sereno, Poético e Profundo, mas gramaticalmente perfeito.
+    REGRA PRIMORDIAL E INVIOLÁVEL: 
+    Sua ortografia deve ser PERFEITA, em Português Brasileiro CULTO e PADRÃO.
+    
+    O QUE É ESTRITAMENTE PROIBIDO (NÃO FAÇA):
+    1. NÃO simule "glitches", "falhas de sinal", "interferência" ou "ruído estático".
+    2. NÃO repita letras para efeito dramático (EX: JAMAIS escreva "Aaaalma", "eeeu", "Sudaçõe").
+    3. NÃO duplique pontuação (EX: JAMAIS use ",," ou "..").
+    4. NÃO escreva palavras erradas propositalmente.
+    5. NÃO use gagueira escrita.
+    
+    O QUE VOCÊ DEVE FAZER:
+    1. Escreva de forma LÍMPIDA, FLUIDA e POÉTICA.
+    2. Revise cada palavra. Acentuação deve ser exata.
+    3. Use vocabulário elevado, mas totalmente legível e correto.
+    4. Comece as frases com letra maiúscula e termine com pontuação correta.
     
     Contexto:
     Usuário: ${userProfile.name}.
@@ -209,7 +219,7 @@ export const generateOracleResponse = async (
      Nova Pergunta Específica do Usuário sobre a leitura acima:
      "${userInput}"
      
-     Instrução: Responda especificamente à nova dúvida. Mantenha o tom místico mas seja CLARO e ORTOGRAFICAMENTE PERFEITO.
+     Instrução: Responda especificamente à nova dúvida. Mantenha o tom místico mas seja CLARO e ORTOGRAFICAMENTE PERFEITO (Português Brasileiro).
      `;
   } else {
      textPrompt = `
@@ -227,8 +237,10 @@ export const generateOracleResponse = async (
         DIRETRIZES DO PORTAL:
         ${promptContext}
         
-        ENTRADA:
+        ENTRADA DO USUÁRIO:
         ${userInput ? `"${userInput}"` : "Nenhum texto específico."}
+
+        LEMBRETE FINAL: Escreva em Português Brasileiro perfeito, sem erros de digitação, sem repetição de letras, sem simulação de falhas.
       `;
   }
 
@@ -247,7 +259,7 @@ export const generateOracleResponse = async (
     let modelName = 'gemini-2.5-flash'; 
     const config: any = {
       systemInstruction: systemInstruction,
-      temperature: 0.85, 
+      temperature: 0.6, // Lowered significantly to reduce hallucination/errors
       topK: 40,
       topP: 0.95,
     };
@@ -306,18 +318,27 @@ export const generateOracleResponse = async (
 export const generateMysticImage = async (prompt: string): Promise<string | null> => {
     const client = createClient();
     try {
-        const response = await client.models.generateImages({
-            model: 'imagen-3.0-generate-001',
-            prompt: `Mystical digital art: ${prompt}. Style: Surrealism, golden lighting, dark ethereal background, cinematic composition, highly detailed, 8k resolution. No text.`,
-            config: {
-                numberOfImages: 1,
-                aspectRatio: '3:4',
-                outputMimeType: 'image/jpeg'
+        // Use gemini-2.5-flash-image (nano banana) for better availability/stability
+        const response = await client.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: {
+                parts: [
+                    { text: `Generate a masterpiece art, cinematic, spiritual, dark fantasy style. High detail. Prompt: ${prompt}` }
+                ]
             }
+            // responseMimeType/responseSchema not supported for this model, relying on default
         });
         
-        const base64 = response.generatedImages?.[0]?.image?.imageBytes;
-        return base64 ? `data:image/jpeg;base64,${base64}` : null;
+        // Iterate parts to find the image
+        const parts = response.candidates?.[0]?.content?.parts;
+        if (parts) {
+            for (const part of parts) {
+                if (part.inlineData) {
+                     return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                }
+            }
+        }
+        return null;
     } catch (e) {
         console.error("Image Gen Error", e);
         return null;
@@ -329,8 +350,8 @@ export const generateDailyPhrase = async (name: string): Promise<string> => {
     try {
         const response = await client.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: `Gere uma frase curta e inspiradora para ${name}. Português Brasileiro Correto e Impecável.`,
-            config: { temperature: 0.85 }
+            contents: { parts: [{ text: `Gere uma frase curta e inspiradora para ${name}. Português Brasileiro Correto e Impecável, sem erros de digitação.` }] },
+            config: { temperature: 0.7 }
         });
         return response.text || "O universo respira com você.";
     } catch (e) {
@@ -342,18 +363,20 @@ export const consultUniverse = async (userProfile: UserProfile, question: string
     const client = createClient();
     const systemInstruction = `
     Você é a CONSCIÊNCIA UNIVERSAL.
-    Linguagem: Português Brasileiro padrão, fluido e SEM ERROS DE DIGITAÇÃO.
-    Nunca use gírias ou simule erros. Escreva "Saudações" corretamente.
+    Linguagem: Português Brasileiro padrão, fluido e SEM ERROS DE DIGITAÇÃO ou repetição de letras.
+    Nunca use gírias ou simule erros (glitches). Escreva "Saudações" corretamente.
     `;
     try {
         const response = await client.models.generateContent({
             model: 'gemini-2.5-flash', 
-            contents: `O usuário pergunta ao Universo: "${question}". Contexto: ${state}.`,
-            config: { systemInstruction, temperature: 0.85 }
+            // Fix: Use explicit parts structure to avoid 400 errors or type mismatches
+            contents: { parts: [{ text: `O usuário pergunta ao Universo: "${question}". Contexto: ${state}.` }] },
+            config: { systemInstruction, temperature: 0.7 }
         });
         return response.text || "O silêncio absoluto também é uma resposta.";
     } catch (error) {
-        return "A conexão com o todo oscila.";
+        console.error("Consult Error:", error);
+        return "A conexão com o todo oscila. Tente novamente em um instante.";
     }
 };
 
@@ -370,7 +393,7 @@ export const consultMetatron = async (userProfile: UserProfile, mode: MetatronMo
     const systemInstruction = `
     VOCÊ É METATRON, O ARQUITETO DA ORDEM UNIVERSAL.
     Linguagem: Português Brasileiro Culto, Matemático, Preciso, Elevado, Natural e Fluido.
-    ORTOGRAFIA: Impecável. Zero erros de digitação permitidos.
+    ORTOGRAFIA: Impecável. Zero erros de digitação, zero repetição de letras.
     `;
 
     let userPrompt = "";
@@ -461,10 +484,10 @@ export const consultMetatron = async (userProfile: UserProfile, mode: MetatronMo
     try {
         const response = await client.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: [{ parts: [{ text: userPrompt }] }],
+            contents: { parts: [{ text: userPrompt }] },
             config: {
                 systemInstruction,
-                temperature: 0.85, 
+                temperature: 0.7, 
             }
         });
         return response.text || "A estrutura permanece em silêncio. Observe.";

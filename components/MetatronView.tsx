@@ -4,12 +4,36 @@ import { consultMetatron, MetatronMode, generateAudioReading } from '../services
 import { saveReading } from '../services/storage';
 import { soundManager } from '../services/soundService';
 import { GetIcon } from './Icons';
-import TypingEffect from './TypingEffect';
 
 interface Props {
   user: UserProfile;
   onClose: () => void;
 }
+
+// --- AUDIO VISUALIZER COMPONENT ---
+const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
+    return (
+        <div className="flex flex-col items-center justify-center py-12 gap-8">
+            <div className={`flex items-center gap-1.5 h-16 ${isPlaying ? '' : 'opacity-30 grayscale'}`}>
+                 {[...Array(9)].map((_, i) => (
+                    <div 
+                        key={i} 
+                        className={`w-1.5 bg-mystic-gold rounded-full transition-all duration-300 ${isPlaying ? 'animate-[pulse_1s_ease-in-out_infinite]' : 'h-1'}`}
+                        style={{ 
+                            height: isPlaying ? `${Math.random() * 40 + 10}px` : '4px',
+                            animationDelay: `${i * 0.1}s`,
+                            animationDuration: `${0.6 + Math.random() * 0.5}s`
+                        }}
+                    ></div>
+                 ))}
+            </div>
+            
+            <p className="text-[10px] font-serif tracking-[0.3em] uppercase text-mystic-gold/80 animate-pulse">
+                {isPlaying ? "A Estrutura Fala..." : "Calculando Vibração..."}
+            </p>
+        </div>
+    );
+};
 
 // Sacred Geometry SVG Component
 const MetatronCube: React.FC<{ className?: string, spinning?: boolean }> = ({ className, spinning }) => (
@@ -69,15 +93,19 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
     setAudioBase64(null);
     soundManager.stopTTS();
     setIsPlaying(false);
+    setGeneratingAudio(true); // Prep visual
 
     // Structural Delay
     await new Promise(resolve => setTimeout(resolve, 4000));
 
     const result = await consultMetatron(user, mode);
     
+    // CRITICAL FIX: Safe UUID
+    const safeId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `meta-${Date.now()}`;
+
     // Save
     const reading: Reading = {
-        id: crypto.randomUUID(),
+        id: safeId,
         portalId: 'metatron',
         portalName: 'METATRON',
         timestamp: Date.now(),
@@ -87,6 +115,16 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
     saveReading(reading);
 
     setResponse(result);
+    
+    // Auto Play Audio
+    const audio = await generateAudioReading(result);
+    if (audio) {
+        setAudioBase64(audio);
+        setIsPlaying(true);
+        soundManager.playTTS(audio, () => setIsPlaying(false));
+    }
+    setGeneratingAudio(false);
+
     setStatus('REVEALED');
     soundManager.playReveal();
   };
@@ -112,6 +150,24 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
         soundManager.playTTS(rawBase64, () => setIsPlaying(false));
     }
     setGeneratingAudio(false);
+  };
+
+  const handleDownloadAudio = () => {
+      if (!audioBase64) return;
+      soundManager.playClick();
+      try {
+          const blob = soundManager.createWavBlob(audioBase64);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Metatron_Voz_${Date.now()}.wav`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+      } catch (e) {
+          console.error("Download failed", e);
+      }
   };
 
   const handleBack = () => {
@@ -204,16 +260,26 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
 
         {/* REVEALED STATE */}
         {status === 'REVEALED' && (
-            <div className="w-full h-[65vh] overflow-y-auto custom-scrollbar border-t border-b border-mystic-gold/10 bg-black/40 backdrop-blur-md p-8 animate-fade-in relative">
+            <div className="w-full h-[65vh] overflow-y-auto custom-scrollbar border-t border-b border-mystic-gold/10 bg-black/40 backdrop-blur-md p-8 animate-fade-in relative flex flex-col items-center justify-center">
                 {/* Decorative corners */}
                 <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-mystic-gold/40"></div>
                 <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-mystic-gold/40"></div>
                 <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-mystic-gold/40"></div>
                 <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-mystic-gold/40"></div>
 
-                <TypingEffect text={response} speed={30} className="text-justify" />
+                {/* AUDIO VISUALIZER REPLACING TEXT */}
+                <div className="w-full flex justify-center py-8">
+                    {generatingAudio ? (
+                        <div className="flex flex-col items-center gap-4 animate-pulse">
+                             <GetIcon name="RefreshCw" className="w-8 h-8 text-mystic-gold/50 animate-spin" />
+                             <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-mystic-gold/50">Sintetizando...</span>
+                        </div>
+                    ) : (
+                        <AudioVisualizer isPlaying={isPlaying} />
+                    )}
+                </div>
 
-                <div className="flex justify-center mt-12 mb-4">
+                <div className="flex justify-center mt-12 mb-4 gap-4">
                     <button 
                         onClick={toggleAudio}
                         disabled={generatingAudio}
@@ -226,8 +292,10 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
                         ) : (
                             <GetIcon name={isPlaying ? "VolumeX" : "Volume2"} className="w-3 h-3" />
                         )}
-                        <span>{isPlaying ? 'Silenciar Frequência' : 'Voz da Estrutura'}</span>
+                        <span>{isPlaying ? 'Pausar Frequência' : 'Ouvir Novamente'}</span>
                     </button>
+
+                    <button onClick={handleDownloadAudio} disabled={!audioBase64 || generatingAudio} className={`flex items-center gap-2 px-6 py-2 border border-mystic-gold/30 rounded-none text-mystic-gold/60 hover:text-mystic-gold hover:bg-mystic-gold/5 transition-all text-[10px] font-sans tracking-[0.2em] uppercase ${!audioBase64 ? 'opacity-50 cursor-not-allowed' : ''}`}><GetIcon name="Download" className="w-3 h-3" /><span>Baixar</span></button>
                 </div>
                 
                 <div className="text-center mt-6">

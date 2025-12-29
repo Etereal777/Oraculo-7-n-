@@ -15,29 +15,6 @@ interface Props {
   onOpenMetatron: () => void;
 }
 
-const PORTAL_COLORS: Record<string, string> = {
-  // Grandes Portais
-  semente_estelar: 'text-cyan-300 group-hover:text-cyan-100', // Cosmic Cyan
-  tarot: 'text-purple-400 group-hover:text-purple-200', // Mystic Purple
-  mapa: 'text-amber-500 group-hover:text-amber-200', // Golden Map
-  numeros: 'text-blue-400 group-hover:text-blue-100', // Logic Blue
-  peregrinacao: 'text-emerald-400 group-hover:text-emerald-200', // Nature Green
-  visao: 'text-indigo-400 group-hover:text-indigo-100', // Third Eye Indigo
-  tzolkin: 'text-orange-400 group-hover:text-orange-100', // Solar Orange
-  
-  // Presença
-  sombra: 'text-gray-400 group-hover:text-gray-100', // Silver/Shadow
-  vibracao: 'text-fuchsia-400 group-hover:text-fuchsia-200', // High Frequency
-  chakra: 'text-rose-400 group-hover:text-rose-200', // Vitality/Lotus
-  
-  // Sintonias Sutis
-  oraculo: 'text-amber-200 group-hover:text-white', // Pure Light
-  sonhos: 'text-violet-300 group-hover:text-violet-100', // Dreamy Violet
-  intencao: 'text-yellow-300 group-hover:text-yellow-100', // Willpower
-  elemento: 'text-red-400 group-hover:text-red-200', // Elemental Fire
-  ciclo: 'text-teal-300 group-hover:text-teal-100', // Cyclic Teal
-};
-
 const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpenUniverse, onOpenGrimoire, onOpenMetatron }) => {
   const [dailyPhrase, setDailyPhrase] = useState("Sintonizando energias...");
   const [moonPhase, setMoonPhase] = useState("");
@@ -86,7 +63,21 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
         
         <div className={`flex flex-wrap justify-center ${containerClass}`}>
           {portals.map(portal => {
-            const iconColorClass = PORTAL_COLORS[portal.id] || 'text-mystic-ethereal/80 group-hover:text-mystic-gold';
+            // UNIFIED COLOR PALETTE STRATEGY
+            // All icons now stick to the Gold/Amber/Blue/Indigo range for premium feel.
+            let iconColorClass = 'text-mystic-ethereal/70 group-hover:text-mystic-gold'; // Default
+            
+            // Subtle differentiation based on type of energy
+            if (['tarot', 'tzolkin', 'oraculo', 'intencao'].includes(portal.id)) {
+                iconColorClass = 'text-mystic-gold/80 group-hover:text-amber-200'; // Pure Gold/Light
+            } else if (['sombra', 'sonhos', 'peregrinacao', 'visao'].includes(portal.id)) {
+                iconColorClass = 'text-indigo-300/70 group-hover:text-indigo-100'; // Deep/Mystic Blue
+            } else if (['semente_estelar', 'vibracao', 'elemento', 'ciclo'].includes(portal.id)) {
+                iconColorClass = 'text-blue-200/70 group-hover:text-white'; // Ethereal White/Blue
+            } else if (['mapa', 'numeros', 'chakra'].includes(portal.id)) {
+                iconColorClass = 'text-amber-500/80 group-hover:text-amber-200'; // Earthy Gold
+            }
+
             const sizeClass = category === PortalCategory.DEEP 
                 ? 'w-full md:w-[30%] min-w-[280px] h-48' 
                 : 'w-[45%] md:w-[22%] min-w-[150px] h-40';

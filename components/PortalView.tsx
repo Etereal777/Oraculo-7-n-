@@ -4,7 +4,6 @@ import { GetIcon } from './Icons';
 import { generateOracleResponse, generateAudioReading, generateMysticImage } from '../services/geminiService';
 import { saveReading } from '../services/storage';
 import { soundManager } from '../services/soundService';
-import TypingEffect from './TypingEffect';
 import { TAROT_DECK } from '../data/tarotData';
 import html2canvas from 'html2canvas';
 
@@ -42,29 +41,53 @@ const RitualBreath: React.FC<{ variant?: 'gold' | 'shadow' }> = ({ variant = 'go
     }, []);
 
     if (variant === 'shadow') {
+        // Shadow Portal Specific Loader: The Eclipse
+        const shadowText = text === "Inspire..." ? "Encare..." : text === "Segure..." ? "Sustente..." : "Integre...";
+        
         return (
-            <div className="flex flex-col items-center justify-center animate-fade-in">
+            <div className="flex flex-col items-center justify-center animate-fade-in z-20">
                 <div 
-                    className="w-48 h-48 rounded-full flex items-center justify-center relative transition-transform duration-[3500ms] ease-in-out"
+                    className="relative w-56 h-56 flex items-center justify-center transition-transform duration-[3500ms] ease-in-out"
                     style={{ transform: `scale(${scale})` }}
                 >
-                    {/* Shadow Core */}
-                    <div className="absolute inset-0 bg-black rounded-full blur-2xl opacity-80"></div>
-                    <div className="absolute inset-4 bg-[#1a1a1a] rounded-full blur-md border border-gray-800/30"></div>
+                    {/* Outer Chaos Ring - Counter Spin */}
+                    <div className="absolute inset-0 rounded-full border border-gray-800/40 border-t-white/10 animate-[spin_12s_linear_infinite_reverse]"></div>
                     
-                    {/* Subtle Eclipse Ring */}
-                    <div className="w-40 h-40 rounded-full border border-gray-600/20 opacity-40 animate-[spin_20s_linear_infinite_reverse]"></div>
-                    
-                    <div className="absolute text-gray-400 font-serif tracking-[0.3em] text-sm uppercase opacity-60 mix-blend-screen">
-                        {text}
+                    {/* Inner Focus Ring - Fast Spin (Loading Indicator) */}
+                    <div className="absolute inset-4 rounded-full border-[1px] border-transparent border-t-mystic-gold/40 border-r-mystic-gold/10 animate-[spin_3s_linear_infinite]"></div>
+
+                    {/* The Void Core */}
+                    <div className="absolute inset-8 rounded-full bg-black shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-gray-900 flex items-center justify-center z-10 overflow-hidden">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(30,30,30,0.8)_0%,_#000000_100%)]"></div>
+                        
+                        {/* Pulsing Shadow Heart */}
+                        <div className="w-20 h-20 bg-black rounded-full shadow-[0_0_20px_rgba(0,0,0,1)] animate-pulse border border-white/5"></div>
+                        
+                        {/* Text Overlay */}
+                        <div className="absolute text-gray-500 font-serif tracking-[0.4em] text-[9px] uppercase opacity-80 mix-blend-screen z-20">
+                            {shadowText}
+                        </div>
+                    </div>
+
+                    {/* Ethereal Smoke/Glow behind */}
+                    <div className="absolute inset-6 rounded-full bg-mystic-gold/5 blur-xl animate-pulse-slow"></div>
+                </div>
+                
+                <div className="mt-10 flex flex-col items-center gap-2">
+                    <span className="text-[9px] text-gray-500 font-sans tracking-[0.3em] uppercase animate-pulse">
+                        Acessando o Inconsciente
+                    </span>
+                    <div className="flex gap-1">
+                        <span className="w-1 h-1 bg-gray-600 rounded-full animate-bounce" style={{animationDelay: '0s'}}></span>
+                        <span className="w-1 h-1 bg-gray-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
+                        <span className="w-1 h-1 bg-gray-600 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></span>
                     </div>
                 </div>
-                <p className="mt-8 text-xs text-gray-500 font-sans tracking-[0.2em] uppercase animate-pulse">Revelando o Oculto...</p>
             </div>
         );
     }
 
-    // Default Gold Variant
+    // Default Gold Variant (Standard Breathwork)
     return (
         <div className="flex flex-col items-center justify-center animate-fade-in">
             <div 
@@ -156,6 +179,31 @@ const IntegrationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
              <p className="mt-4 text-xs font-sans text-gray-500 tracking-[0.3em] uppercase">Permita que a verdade assente</p>
              
              <button onClick={onClose} className="mt-12 px-6 py-2 border border-white/10 rounded-full text-[10px] uppercase tracking-widest text-gray-500 hover:text-white hover:border-white/30 transition-colors">Encerrar Ritual</button>
+        </div>
+    );
+};
+
+// --- AUDIO VISUALIZER COMPONENT ---
+const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
+    return (
+        <div className="flex flex-col items-center justify-center py-12 gap-8">
+            <div className={`flex items-center gap-1.5 h-16 ${isPlaying ? '' : 'opacity-30 grayscale'}`}>
+                 {[...Array(9)].map((_, i) => (
+                    <div 
+                        key={i} 
+                        className={`w-1.5 bg-mystic-gold rounded-full transition-all duration-300 ${isPlaying ? 'animate-[pulse_1s_ease-in-out_infinite]' : 'h-1'}`}
+                        style={{ 
+                            height: isPlaying ? `${Math.random() * 40 + 10}px` : '4px',
+                            animationDelay: `${i * 0.1}s`,
+                            animationDuration: `${0.6 + Math.random() * 0.5}s`
+                        }}
+                    ></div>
+                 ))}
+            </div>
+            
+            <p className="text-[10px] font-serif tracking-[0.3em] uppercase text-mystic-gold/80 animate-pulse">
+                {isPlaying ? "Oráculo Falando..." : "Sintonizando Voz..."}
+            </p>
         </div>
     );
 };
@@ -279,6 +327,7 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
     setIsPlaying(false);
     setShowFollowUp(false);
     setFollowUpInput('');
+    setGeneratingAudio(true); // Indicate we are preparing audio early
     
     // RITUAL DELAY: Forced breathing time
     await new Promise(resolve => setTimeout(resolve, 8000));
@@ -287,42 +336,85 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
     let finalText = initialInput ? initialInput : text;
     let visualSubject: string | null = null;
 
-    // 1. TAROT LOGIC: Card Selection or Randomization
+    // 1. TAROT LOGIC
     if (portal.id === 'tarot') {
+        const aestheticStyle = "ancient gold and obsidian tarot card style, masterpiece, cinematic lighting, ethereal mist, divine atmosphere, intricate details, mystical symbols, high contrast. Colors: Deep Black, Gold, Amber.";
+
         if (!finalText || finalText === "Sorteio Aleatório") {
-            // Flatten the deck and pick a random card if none provided or random selected
             const allCards = TAROT_DECK.flatMap(group => group.cards);
             const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
             finalText = `Carta sorteada: ${randomCard}`;
-            visualSubject = `The Tarot card: ${randomCard}, mystical illustration, detailed, arcane`;
+            // Visual Prompt for Random Card
+            visualSubject = `Visual interpretation of the Tarot Card archetype '${randomCard}'. ${aestheticStyle}`;
         } else {
-            // Uses the provided card name (e.g. from Grimoire or User Selection)
             const cardName = finalText.replace('Carta escolhida: ', '').replace('Carta sorteada: ', '');
-            visualSubject = `The Tarot card: ${cardName}, mystical illustration, detailed, arcane`;
+            // Visual Prompt for Selected Card
+            visualSubject = `Visual interpretation of the Tarot Card archetype '${cardName}'. ${aestheticStyle}`;
         }
     }
     
     // 2. OTHER VISUAL PORTALS LOGIC
     else if (portal.id === 'semente_estelar' && finalText) {
-        visualSubject = `Mystical cosmic art of ${finalText} starseed energy, nebula, space, divine light`;
+        // Starseed Fix: Map long sentences to simple visual keywords to avoid token overflow/confusion
+        const starseedMap: Record<string, string> = {
+            'saudade': 'distant blue star glowing in dark space, solitude, cosmic yearning',
+            'missão': 'golden light healing earth from space, divine hands, spiritual energy',
+            'lógica': 'sacred geometry blue patterns, futuristic technology, arcturian vibes',
+            'guerreiro': 'sword of light in cosmos, galactic guardian, stern face',
+            'observador': 'giant eye in the nebula, watching silently, purple clouds',
+            'memórias': 'ancient crystal city atlantis underwater glowing, sci-fi ancient',
+            'liberdade': 'bird of light flying in space, breaking chains, supernova',
+            'deslocado': 'lone silhouette staring at stars on alien planet, purple sky'
+        };
+        
+        let keyword = 'cosmic energy, nebula, stars';
+        for (const [key, value] of Object.entries(starseedMap)) {
+            if (finalText.toLowerCase().includes(key)) {
+                keyword = value;
+                break;
+            }
+        }
+        visualSubject = `Mystical cosmic art: ${keyword}. High quality, ethereal, cinematic lighting.`;
     }
     else if (portal.id === 'elemento' && finalText) {
-        visualSubject = `Mystical art representing the element ${finalText}, alchemy, ethereal nature`;
+        visualSubject = `Mystical art representing the element ${finalText}, alchemy symbol, ethereal nature, elemental energy`;
     }
     else if (portal.id === 'chakra' && finalText) {
-        visualSubject = `Spiritual glowing energy of the ${finalText} chakra, sacred geometry`;
+        visualSubject = `Spiritual glowing energy of the ${finalText} chakra, lotus flower, sacred geometry, vibration`;
     }
     else if (portal.id === 'sonhos' && finalText) {
-         visualSubject = `Surreal dreamscape interpreting: ${finalText.substring(0, 100)}, salvador dali style, ethereal`;
+         visualSubject = `Surreal dreamscape interpreting: ${finalText.substring(0, 100)}, salvador dali style, ethereal, mist, dream world`;
     }
     else if (portal.id === 'intencao' && finalText) {
-         visualSubject = `Visual manifestation of the intention: ${finalText.substring(0, 100)}, glowing light, magic`;
+         visualSubject = `Visual manifestation of the intention: ${finalText.substring(0, 100)}, glowing light orb, magic, sparkles`;
     }
     else if (portal.id === 'sombra') {
-         visualSubject = `The integration of shadow and light, jungian psychology art, eclipse, ethereal`;
+         visualSubject = `The integration of shadow and light, jungian psychology art, eclipse, ethereal, dark and gold contrast`;
+    }
+    else if (portal.id === 'tzolkin') {
+         // TZOLKIN VISUAL TRIGGER
+         visualSubject = `Ancient Mayan Tzolkin Glyph carved in golden obsidian stone, mystical symbols, kin energy, aztec patterns, divine calendar`;
+    }
+    else if (portal.id === 'numeros') {
+         visualSubject = `Sacred geometry pattern representing divine mathematics, golden ratio, fibonacci spiral, glowing lines in dark void`;
+    }
+    else if (portal.id === 'peregrinacao') {
+         visualSubject = `Atmospheric concept art of a hidden sacred temple, spiritual sanctuary, misty forest or mountain, mystical light beams`;
+    }
+    else if (portal.id === 'vibracao' && finalText) {
+         visualSubject = `Abstract aura photography representing the emotion: ${finalText}, ethereal color waves, spiritual energy field`;
+    }
+    else if (portal.id === 'oraculo') {
+         visualSubject = `Abstract ethereal light, divine spark in the void, golden particles, moment of revelation, cinematic lighting, mystical atmosphere`;
+    }
+    else if (portal.id === 'ciclo') {
+         visualSubject = `Symbol of the Ouroboros, golden snake eating its tail, infinity loop, phases of the moon, spiral time, dark background`;
+    }
+    else if (portal.id === 'mapa') {
+         visualSubject = `Ancient celestial map, golden zodiac constellations, astral chart, nebula background, sacred geometry of the stars`;
     }
 
-    // Parallel Execution
+    // Parallel Execution of Text and Image
     const promises: Promise<any>[] = [
         generateOracleResponse(portal.promptContext, user, finalText, portal.title, image, loc)
     ];
@@ -337,8 +429,11 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
 
     if (resultImage) setGeneratedVisual(resultImage);
 
+    // CRITICAL FIX: Safe UUID
+    const safeId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `portal-${Date.now()}`;
+
     const reading: Reading = {
-      id: crypto.randomUUID(),
+      id: safeId,
       portalId: portal.id,
       portalName: portal.title,
       timestamp: Date.now(),
@@ -348,6 +443,16 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
 
     saveReading(reading);
     setResponse(resultText);
+    
+    // AUTO AUDIO GENERATION
+    const audio = await generateAudioReading(resultText);
+    if (audio) {
+        setAudioBase64(audio);
+        setIsPlaying(true);
+        soundManager.playTTS(audio, () => setIsPlaying(false));
+    }
+    setGeneratingAudio(false);
+
     setStatus('REVEALED');
     soundManager.playReveal(); 
   };
@@ -376,15 +481,28 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
     // Update local state
     setResponse(newFullResponse);
     
+    // Safe ID
+    const safeId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `followup-${Date.now()}`;
+
     // Save new reading history
     saveReading({
-        id: crypto.randomUUID(),
+        id: safeId,
         portalId: portal.id,
         portalName: portal.title,
         timestamp: Date.now(),
         userInput: `[Aprofundamento]: ${followUpInput}`,
         response: followUpResponse
     });
+
+    // Auto play ONLY the new part
+    setGeneratingAudio(true);
+    const audio = await generateAudioReading(followUpResponse);
+    if (audio) {
+        setAudioBase64(audio);
+        setIsPlaying(true);
+        soundManager.playTTS(audio, () => setIsPlaying(false));
+    }
+    setGeneratingAudio(false);
 
     setIsFollowingUp(false);
     setShowFollowUp(false);
@@ -415,6 +533,24 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
     setGeneratingAudio(false);
   };
 
+  const handleDownloadAudio = () => {
+      if (!audioBase64) return;
+      soundManager.playClick();
+      try {
+          const blob = soundManager.createWavBlob(audioBase64);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Oraculo7_Voz_${Date.now()}.wav`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+      } catch (e) {
+          console.error("Download failed", e);
+      }
+  };
+
   // --- MATERIALIZE CARD FEATURE ---
   const handleMaterialize = async () => {
       soundManager.playClick();
@@ -422,10 +558,6 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
 
       try {
           const element = captureRef.current;
-          // IMPORTANT: Do NOT use display:none. Use opacity or position fixed off-screen.
-          // html2canvas cannot render display:none elements.
-          // The element is already mounted but positioned off-screen via styles below.
-          
           const canvas = await html2canvas(element, {
               backgroundColor: '#050406',
               scale: 2, // High res
@@ -443,12 +575,6 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
           console.error("Error materializing:", e);
           alert("Não foi possível materializar a lâmina. Tente novamente.");
       }
-  };
-
-  const handleCopy = () => {
-    soundManager.playClick();
-    const shareText = `ORÁCULO 7\nPortal: ${portal.title}\n\n"${response}"\n\nConsulte o oráculo.`;
-    navigator.clipboard.writeText(shareText);
   };
 
   const handleBack = () => {
@@ -589,21 +715,32 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
              
              <div className="bg-[#08051a]/60 backdrop-blur-xl p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 
-                {/* Generative Visual Display */}
+                {/* Generative Visual Display - Materialization Effect */}
                 {generatedVisual && (
-                    <div className="mb-8 rounded-xl overflow-hidden border border-mystic-gold/30 shadow-glow-gold relative animate-fade-in">
-                        <img src={generatedVisual} alt="Visão Mística Gerada" className="w-full h-auto object-cover" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span className="text-xs text-mystic-gold font-sans tracking-widest uppercase">Visão do Portal</span>
+                    <div className="mb-8 rounded-xl overflow-hidden border border-mystic-gold/30 shadow-glow-gold relative animate-fade-in group">
+                        <img src={generatedVisual} alt="Visão Mística Gerada" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-1000" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                        <div className="absolute bottom-4 left-0 right-0 text-center">
+                            <span className="text-[10px] text-mystic-gold/80 font-serif tracking-[0.3em] uppercase drop-shadow-md border border-mystic-gold/20 px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm">Visão Materializada</span>
                         </div>
                     </div>
                 )}
 
-                <TypingEffect text={response} speed={30} className="text-base md:text-lg text-justify leading-relaxed" />
-                
+                {/* AUDIO ONLY INTERFACE - TEXT REMOVED */}
+                <div className="py-8 flex flex-col items-center">
+                    {generatingAudio ? (
+                        <div className="flex flex-col items-center gap-4 animate-pulse">
+                            <GetIcon name="RefreshCw" className="w-8 h-8 text-mystic-gold/50 animate-spin" />
+                            <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-mystic-gold/50">Materializando Voz...</span>
+                        </div>
+                    ) : (
+                        <AudioVisualizer isPlaying={isPlaying} />
+                    )}
+                </div>
+
                 {/* --- FOLLOW-UP SECTION FOR SEMENTE ESTELAR --- */}
-                {portal.id === 'semente_estelar' && !showFollowUp && !isFollowingUp && (
-                   <div className="mt-8 pt-6 border-t border-white/5 text-center animate-fade-in" style={{animationDelay: '3s'}}>
+                {portal.id === 'semente_estelar' && !showFollowUp && !isFollowingUp && !generatingAudio && (
+                   <div className="mt-8 pt-6 border-t border-white/5 text-center animate-fade-in" style={{animationDelay: '1s'}}>
                        <button 
                            onClick={() => setShowFollowUp(true)}
                            className="text-xs font-serif tracking-[0.2em] text-mystic-gold hover:text-white transition-colors uppercase border border-mystic-gold/30 px-6 py-3 rounded-full hover:bg-mystic-gold/10"
@@ -643,7 +780,10 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
                 {/* --------------------------------------------- */}
 
                 <div className="mt-10 flex flex-wrap justify-center gap-3 animate-fade-in border-t border-white/5 pt-8" style={{animationDelay: '1.5s'}}>
-                    <button onClick={toggleAudio} disabled={generatingAudio} className={`relative overflow-hidden flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all text-[10px] font-sans tracking-[0.2em] uppercase ${isPlaying ? 'bg-mystic-gold/10 border-mystic-gold text-mystic-gold animate-pulse' : generatingAudio ? 'bg-white/5 border-white/10 text-white/50 cursor-wait' : 'border-white/20 text-mystic-ethereal/70 hover:bg-white/5 hover:text-mystic-gold hover:border-mystic-gold/30'}`}>{generatingAudio ? <><GetIcon name="RefreshCw" className="w-3 h-3 animate-spin" /><span>Gerando Voz...</span></> : <>{isPlaying ? <div className="w-2 h-2 bg-mystic-gold rounded-sm" /> : <GetIcon name="Volume2" className="w-3 h-3" />}<span>{isPlaying ? 'Silenciar' : 'Ouvir'}</span></>}</button>
+                    <button onClick={toggleAudio} disabled={generatingAudio} className={`relative overflow-hidden flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all text-[10px] font-sans tracking-[0.2em] uppercase ${isPlaying ? 'bg-mystic-gold/10 border-mystic-gold text-mystic-gold animate-pulse' : generatingAudio ? 'bg-white/5 border-white/10 text-white/50 cursor-wait' : 'border-white/20 text-mystic-ethereal/70 hover:bg-white/5 hover:text-mystic-gold hover:border-mystic-gold/30'}`}>{generatingAudio ? <><GetIcon name="RefreshCw" className="w-3 h-3 animate-spin" /><span>Gerando...</span></> : <>{isPlaying ? <div className="w-2 h-2 bg-mystic-gold rounded-sm" /> : <GetIcon name="Volume2" className="w-3 h-3" />}<span>{isPlaying ? 'Pausar' : 'Ouvir Novamente'}</span></>}</button>
+                    
+                    <button onClick={handleDownloadAudio} disabled={!audioBase64 || generatingAudio} className={`flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5 ${!audioBase64 ? 'opacity-50 cursor-not-allowed' : ''}`}><GetIcon name="Download" className="w-3 h-3" /><span>Baixar Voz</span></button>
+                    
                     <button onClick={handleMaterialize} className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5"><GetIcon name="Camera" className="w-3 h-3" /><span>Materializar</span></button>
                     <button onClick={() => setShowIntegration(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/20 text-mystic-ethereal/70 hover:text-white hover:border-white/40 transition-all text-[10px] font-sans tracking-[0.2em] uppercase hover:bg-white/5"><GetIcon name="CircleDot" className="w-3 h-3" /><span>Integrar</span></button>
                 </div>
@@ -656,34 +796,55 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
         )}
       </div>
 
-      {/* Hidden Card Structure for Export - Fixed position off-screen so html2canvas can render it */}
+      {/* Hidden Card Structure for Export - Refined for Audio-First Look */}
       <div ref={captureRef} style={{ position: 'fixed', left: '-9999px', top: '0', width: '540px', height: '960px', backgroundColor: '#050406', zIndex: -10 }} className="flex flex-col items-center justify-between p-12 text-center">
           <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-black to-[#050406]"></div>
+          
+          {/* Border Decoration */}
+          <div className="absolute inset-4 border border-mystic-gold/20 rounded-2xl pointer-events-none"></div>
+
           <div className="relative z-10 w-full h-full flex flex-col items-center">
-              <div className="mt-8 mb-6">
+              <div className="mt-10 mb-6">
                   <h1 className="font-serif text-3xl text-mystic-gold tracking-[0.4em] uppercase">Oráculo<span className="font-light">7</span></h1>
                   <div className="w-12 h-[1px] bg-mystic-gold/50 mx-auto mt-2"></div>
               </div>
               
               {generatedVisual ? (
-                  <div className="w-full aspect-[3/4] rounded-xl overflow-hidden border border-mystic-gold/40 shadow-[0_0_50px_rgba(212,175,55,0.2)] mb-8">
+                  <div className="w-full aspect-[3/4] rounded-xl overflow-hidden border border-mystic-gold/40 shadow-[0_0_50px_rgba(212,175,55,0.2)] mb-8 relative">
                       <img src={generatedVisual} className="w-full h-full object-cover" alt="Vision" />
+                      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                   </div>
               ) : (
-                  <div className="w-full aspect-[3/4] rounded-xl border border-mystic-gold/20 flex items-center justify-center mb-8 bg-white/5">
-                      <GetIcon name={portal.icon} className="w-24 h-24 text-mystic-gold opacity-50" />
+                  <div className="w-full aspect-[3/4] rounded-xl border border-mystic-gold/20 flex items-center justify-center mb-8 bg-white/5 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.1)_0%,_transparent_70%)] opacity-30"></div>
+                      <GetIcon name={portal.icon} className="w-24 h-24 text-mystic-gold opacity-50 relative z-10" />
                   </div>
               )}
               
-              <div className="flex-1 flex flex-col justify-center">
-                   <p className="font-serif text-mystic-gold/80 text-sm tracking-[0.3em] uppercase mb-4">{portal.title}</p>
-                   <p className="font-reading text-2xl text-mystic-ethereal italic leading-relaxed px-4 line-clamp-6">
-                       "{response.split('\n')[0].replace(/\*\*/g, '').substring(0, 150)}..."
-                   </p>
+              <div className="flex-1 flex flex-col justify-center w-full">
+                   <p className="font-serif text-mystic-gold/60 text-xs tracking-[0.3em] uppercase mb-4">{portal.title} • Frequência</p>
+                   
+                   {/* Sound Wave Representation */}
+                   <div className="flex justify-center items-center gap-1 h-8 mb-6 opacity-70">
+                        {[...Array(15)].map((_, i) => (
+                            <div key={i} className="w-1 bg-mystic-gold rounded-full" style={{ height: `${Math.random() * 20 + 5}px` }}></div>
+                        ))}
+                   </div>
+
+                   <div className="relative">
+                       <span className="absolute -top-4 -left-2 text-4xl text-mystic-gold/20 font-serif">“</span>
+                       <p className="font-reading text-xl text-mystic-ethereal italic leading-relaxed px-4 text-center">
+                           {/* Capture just the first meaningful sentence/paragraph for impact */}
+                           {response.replace(/\*\*/g, '').replace(/^#+\s.*$/gm, '').trim().split('\n').filter(l => l.length > 30)[0] || "A sabedoria foi revelada."}
+                       </p>
+                       <span className="absolute -bottom-6 -right-2 text-4xl text-mystic-gold/20 font-serif transform rotate-180">“</span>
+                   </div>
               </div>
 
-              <div className="mt-8 text-[10px] font-sans tracking-[0.4em] text-gray-500 uppercase">
+              <div className="mt-12 text-[9px] font-sans tracking-[0.4em] text-gray-500 uppercase flex items-center gap-2">
+                  <span className="w-1 h-1 bg-mystic-gold/50 rounded-full"></span>
                   oraculo7.com.br
+                  <span className="w-1 h-1 bg-mystic-gold/50 rounded-full"></span>
               </div>
           </div>
       </div>

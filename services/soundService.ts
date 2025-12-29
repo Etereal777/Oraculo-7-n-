@@ -1,5 +1,5 @@
 // Motor de Áudio Processual para o Oráculo 7
-// Atualizado: SFX Harmônicos + Drone Binaural
+// Atualizado: SFX Harmônicos + Drone Binaural + WAV Encoder
 
 class SoundManager {
   private ctx: AudioContext | null = null;
@@ -226,10 +226,45 @@ class SoundManager {
      return audioBuffer;
   }
 
-  // --- HARMONIC SFX (Low Octave A Minor/C Major) ---
-  // Strategy: Use Sine waves, lower octaves (Octave 3 and 4), and slower attack times.
+  // --- WAV DOWNLOAD HELPER ---
+  public createWavBlob(base64Data: string): Blob {
+      // Decodes Base64 to Raw PCM and wraps it in a WAV container (24kHz, 16bit, Mono)
+      const binaryString = atob(base64Data);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+      }
 
-  // Hover: A gentle "water drop" or "bubble" sound
+      // WAV Header Construction
+      const wavHeader = new ArrayBuffer(44);
+      const view = new DataView(wavHeader);
+
+      const writeString = (view: DataView, offset: number, string: string) => {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      };
+
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + len, true);
+      writeString(view, 8, 'WAVE');
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, 1, true); // Mono
+      view.setUint32(24, 24000, true); // Sample Rate
+      view.setUint32(28, 24000 * 2, true); // Byte Rate
+      view.setUint16(32, 2, true); // Block Align
+      view.setUint16(34, 16, true); // Bits per sample
+      writeString(view, 36, 'data');
+      view.setUint32(40, len, true);
+
+      return new Blob([view, bytes], { type: 'audio/wav' });
+  }
+
+  // --- HARMONIC SFX ---
+
   public playHover() {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     const t = this.ctx.currentTime;
@@ -259,7 +294,6 @@ class SoundManager {
     osc.stop(t + 0.6);
   }
 
-  // Click: A soft "wood block" or "heartbeat" thud
   public playClick() {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     const t = this.ctx.currentTime;
@@ -267,7 +301,7 @@ class SoundManager {
     const gain = this.ctx.createGain();
     
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(110, t); // A2 (Very low/warm)
+    osc.frequency.setValueAtTime(110, t);
     osc.frequency.exponentialRampToValueAtTime(100, t + 0.1); 
     
     gain.gain.setValueAtTime(0, t);
@@ -280,7 +314,6 @@ class SoundManager {
     osc.stop(t + 0.2);
   }
 
-  // Transition: "Water Harp" - Gentle arpeggio
   public playTransition() {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     const t = this.ctx.currentTime;
@@ -315,7 +348,6 @@ class SoundManager {
     });
   }
 
-  // Reveal: A warm "Pad" swell
   public playReveal() {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     const t = this.ctx.currentTime;

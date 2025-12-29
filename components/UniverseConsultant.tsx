@@ -4,7 +4,6 @@ import { consultUniverse, generateAudioReading } from '../services/geminiService
 import { saveReading } from '../services/storage';
 import { soundManager } from '../services/soundService';
 import { GetIcon } from './Icons';
-import TypingEffect from './TypingEffect';
 
 interface Props {
   user: UserProfile;
@@ -12,6 +11,31 @@ interface Props {
 }
 
 const STATES = ['Confuso', 'Em expansão', 'Em silêncio', 'Em transição', 'Grato'];
+
+// --- AUDIO VISUALIZER COMPONENT ---
+const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
+    return (
+        <div className="flex flex-col items-center justify-center py-12 gap-8">
+            <div className={`flex items-center gap-1.5 h-16 ${isPlaying ? '' : 'opacity-30 grayscale'}`}>
+                 {[...Array(9)].map((_, i) => (
+                    <div 
+                        key={i} 
+                        className={`w-1.5 bg-mystic-ethereal rounded-full transition-all duration-300 ${isPlaying ? 'animate-[pulse_1s_ease-in-out_infinite]' : 'h-1'}`}
+                        style={{ 
+                            height: isPlaying ? `${Math.random() * 40 + 10}px` : '4px',
+                            animationDelay: `${i * 0.1}s`,
+                            animationDuration: `${0.6 + Math.random() * 0.5}s`
+                        }}
+                    ></div>
+                 ))}
+            </div>
+            
+            <p className="text-[10px] font-serif tracking-[0.3em] uppercase text-mystic-ethereal/80 animate-pulse">
+                {isPlaying ? "O Universo Fala..." : "Sintonizando Voz..."}
+            </p>
+        </div>
+    );
+};
 
 const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
   const [step, setStep] = useState<'ENTRY' | 'INPUT' | 'CONNECTING' | 'REVEALED'>('ENTRY');
@@ -60,26 +84,47 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
     setAudioBase64(null);
     soundManager.stopTTS();
     setIsPlaying(false);
+    setGeneratingAudio(true); // Start generating logic
     
     // A longer, more reverent delay
     await new Promise(resolve => setTimeout(resolve, 3500));
     
-    const result = await consultUniverse(user, question, selectedState || 'Neutro');
-    
-    // Save to history as a special entry
-    const reading: Reading = {
-      id: crypto.randomUUID(),
-      portalId: 'consultor_universo',
-      portalName: 'Consultor do Universo',
-      timestamp: Date.now(),
-      userInput: `${question} [${selectedState}]`,
-      response: result
-    };
-    saveReading(reading);
-    
-    setResponse(result);
-    setStep('REVEALED');
-    soundManager.playReveal(); // Chime for the universe
+    try {
+        const result = await consultUniverse(user, question, selectedState || 'Neutro');
+        
+        // CRITICAL FIX: Safe ID generation for all environments
+        const safeId = typeof crypto !== 'undefined' && crypto.randomUUID 
+            ? crypto.randomUUID() 
+            : `uni-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        const reading: Reading = {
+          id: safeId,
+          portalId: 'consultor_universo',
+          portalName: 'Consultor do Universo',
+          timestamp: Date.now(),
+          userInput: `${question} [${selectedState}]`,
+          response: result
+        };
+        saveReading(reading);
+        
+        setResponse(result);
+        setStep('REVEALED');
+        soundManager.playReveal(); // Chime for the universe
+
+        // Auto Play Audio
+        const audio = await generateAudioReading(result);
+        if (audio) {
+            setAudioBase64(audio);
+            setIsPlaying(true);
+            soundManager.playTTS(audio, () => setIsPlaying(false));
+        }
+    } catch (e) {
+        console.error("Consultation failed", e);
+        setStep('INPUT');
+        alert("Ocorreu um erro na comunicação. Tente novamente.");
+    } finally {
+        setGeneratingAudio(false);
+    }
   };
 
   const toggleAudio = async () => {
@@ -109,6 +154,24 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
     setGeneratingAudio(false);
   };
 
+  const handleDownloadAudio = () => {
+      if (!audioBase64) return;
+      soundManager.playClick();
+      try {
+          const blob = soundManager.createWavBlob(audioBase64);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Universo_Voz_${Date.now()}.wav`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+      } catch (e) {
+          console.error("Download failed", e);
+      }
+  };
+
   // Smart Back Navigation
   const handleBack = () => {
     soundManager.playClick();
@@ -118,6 +181,10 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
     switch(step) {
         case 'REVEALED':
             setStep('INPUT'); // Go back to edit question
+            break;
+        case 'CONNECTING':
+            // If user cancels connecting, just return to input, don't close app
+            setStep('INPUT');
             break;
         case 'INPUT':
             setStep('ENTRY'); // Go back to start screen
@@ -239,11 +306,22 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
         )}
 
         {step === 'REVEALED' && (
-          <div className="w-full h-[80vh] overflow-y-auto custom-scrollbar pr-2 animate-fade-in-delayed">
-             <div className="bg-black/40 backdrop-blur-sm border border-white/5 rounded-none p-8 md:p-12 shadow-2xl">
-                <TypingEffect text={response} speed={40} className="" />
+          <div className="w-full h-[80vh] overflow-y-auto custom-scrollbar pr-2 animate-fade-in-delayed flex flex-col items-center justify-center">
+             <div className="bg-black/40 backdrop-blur-sm border border-white/5 rounded-none p-8 md:p-12 shadow-2xl w-full">
                 
-                <div className="flex justify-center mt-8">
+                {/* Audio Visualizer replaced text */}
+                <div className="py-8 flex flex-col items-center">
+                    {generatingAudio ? (
+                        <div className="flex flex-col items-center gap-4 animate-pulse">
+                            <GetIcon name="RefreshCw" className="w-8 h-8 text-mystic-ethereal/50 animate-spin" />
+                            <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-mystic-ethereal/50">Decifrando Sinal...</span>
+                        </div>
+                    ) : (
+                        <AudioVisualizer isPlaying={isPlaying} />
+                    )}
+                </div>
+                
+                <div className="flex justify-center mt-8 gap-4">
                     <button 
                         onClick={toggleAudio}
                         disabled={generatingAudio}
@@ -256,15 +334,17 @@ const UniverseConsultant: React.FC<Props> = ({ user, onClose }) => {
                          {generatingAudio ? (
                             <>
                                 <GetIcon name="RefreshCw" className="w-4 h-4 animate-spin" />
-                                <span>Invocando Voz...</span>
+                                <span>Gerando...</span>
                             </>
                         ) : (
                             <>
                                 {isPlaying ? <div className="w-3 h-3 bg-white rounded-sm" /> : <GetIcon name="Volume2" className="w-4 h-4" />}
-                                <span>{isPlaying ? 'Silenciar' : 'Voz do Universo'}</span>
+                                <span>{isPlaying ? 'Silenciar' : 'Ouvir Novamente'}</span>
                             </>
                         )}
                     </button>
+
+                    <button onClick={handleDownloadAudio} disabled={!audioBase64 || generatingAudio} className={`flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-sans tracking-[0.2em] uppercase ${!audioBase64 ? 'opacity-50 cursor-not-allowed' : ''}`}><GetIcon name="Download" className="w-4 h-4" /><span>Baixar Voz</span></button>
                 </div>
              </div>
              

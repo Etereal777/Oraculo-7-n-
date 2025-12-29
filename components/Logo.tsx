@@ -9,16 +9,6 @@ export const Logo: React.FC<{ className?: string }> = ({ className }) => {
       className={`${className} overflow-visible`}
       aria-hidden="true"
     >
-      <defs>
-         <filter id="glow-gold">
-            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-            <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-        </filter>
-      </defs>
-
       <g stroke="currentColor">
         {/* Outer Ring - Spins Slowly */}
         <g className="origin-center animate-spin-slow opacity-60" style={{ transformBox: 'fill-box' }}>
@@ -38,16 +28,16 @@ export const Logo: React.FC<{ className?: string }> = ({ className }) => {
             <path d="M50 85 L20 20 H80 Z" strokeWidth="0.3" opacity="0.4" />
         </g>
         
-        {/* Inner Core - Breathes/Pulses STRONGLY */}
-        <g className="origin-center animate-pulse-slow" style={{ transformBox: 'fill-box', filter: 'url(#glow-gold)' }}>
+        {/* Inner Core - Breathes/Pulses STRONGLY with Golden Glow */}
+        <g className="origin-center animate-pulse-slow text-mystic-gold" style={{ transformBox: 'fill-box' }}>
             {/* Diamond Shape */}
             <path d="M50 12 L88 50 L50 88 L12 50 Z" strokeWidth="1.2" fill="rgba(212, 175, 55, 0.1)" stroke="currentColor" opacity="0.9" />
             
             {/* Inner Square */}
-            <rect x="36" y="36" width="28" height="28" strokeWidth="0.8" opacity="0.8" transform="rotate(45 50 50)" />
+            <rect x="36" y="36" width="28" height="28" strokeWidth="0.8" opacity="0.8" transform="rotate(45 50 50)" stroke="currentColor" />
             
             {/* Center Point - The Eye */}
-            <circle cx="50" cy="50" r="4" fill="currentColor" className="drop-shadow-[0_0_10px_rgba(255,215,0,1)]" />
+            <circle cx="50" cy="50" r="4" fill="currentColor" />
         </g>
       </g>
     </svg>

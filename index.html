@@ -42,7 +42,7 @@
               'inner-light': 'inset 0 0 20px rgba(255, 255, 255, 0.02)',
             },
             animation: {
-              'pulse-slow': 'breathe 8s ease-in-out infinite', /* Slower for contemplation */
+              'pulse-slow': 'breathe 6s ease-in-out infinite', /* Deep Golden Breath */
               'spin-slow': 'spin 30s linear infinite',
               'spin-reverse-slow': 'spin-reverse 35s linear infinite',
               'fade-in': 'manifest 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards', /* Ethereal entry */
@@ -56,8 +56,16 @@
                 '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
               },
               breathe: {
-                 '0%, 100%': { opacity: '0.5', transform: 'scale(1)', filter: 'brightness(1)' },
-                 '50%': { opacity: '0.9', transform: 'scale(1.015)', filter: 'brightness(1.1) drop-shadow(0 0 15px rgba(212,175,55,0.2))' }
+                 '0%, 100%': { 
+                    opacity: '0.8', 
+                    transform: 'scale(1)', 
+                    filter: 'drop-shadow(0 0 2px rgba(212,175,55,0.2)) brightness(1)' 
+                 },
+                 '50%': { 
+                    opacity: '1', 
+                    transform: 'scale(1.05)', 
+                    filter: 'drop-shadow(0 0 15px rgba(212,175,55,0.7)) brightness(1.2)' 
+                 }
               },
               'spin-reverse': {
                 'from': { transform: 'rotate(360deg)' },
