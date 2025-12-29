@@ -63,18 +63,22 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
         
         <div className={`flex flex-wrap justify-center ${containerClass}`}>
           {portals.map(portal => {
-            // UNIFIED COLOR PALETTE STRATEGY
-            let iconColorClass = 'text-mystic-ethereal/60 group-hover:text-mystic-gold'; // Default
+            // UNIFIED COLOR PALETTE STRATEGY FOR HOVER
+            // Base colors remain distinct, but HOVER unifies to GOLD/AMBER as requested.
+            let iconColorClass = 'text-mystic-ethereal/60 group-hover:text-mystic-gold group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]'; 
             
-            // Subtle differentiation based on type of energy
             if (['tarot', 'tzolkin', 'oraculo', 'intencao'].includes(portal.id)) {
-                iconColorClass = 'text-mystic-gold/70 group-hover:text-amber-200'; // Pure Gold/Light
+                // Pure Gold Base -> Bright Amber Hover
+                iconColorClass = 'text-mystic-gold/70 group-hover:text-amber-200 group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.6)]'; 
             } else if (['sombra', 'sonhos', 'peregrinacao', 'visao'].includes(portal.id)) {
-                iconColorClass = 'text-indigo-300/60 group-hover:text-indigo-100'; // Deep/Mystic Blue
+                // Indigo Base -> Mystic Gold Hover
+                iconColorClass = 'text-indigo-300/60 group-hover:text-mystic-gold'; 
             } else if (['semente_estelar', 'vibracao', 'elemento', 'ciclo'].includes(portal.id)) {
-                iconColorClass = 'text-blue-200/60 group-hover:text-white'; // Ethereal White/Blue
+                // Blue Base -> Pale Gold Hover
+                iconColorClass = 'text-blue-200/60 group-hover:text-amber-100'; 
             } else if (['mapa', 'numeros', 'chakra'].includes(portal.id)) {
-                iconColorClass = 'text-amber-500/70 group-hover:text-amber-200'; // Earthy Gold
+                // Earthy Base -> Bright Gold Hover
+                iconColorClass = 'text-amber-700/60 group-hover:text-amber-300'; 
             }
 
             const sizeClass = category === PortalCategory.DEEP 
@@ -93,8 +97,8 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
                   glass-panel rounded-xl
                   flex flex-col items-center justify-center text-center
                   transition-all duration-700 ease-out
-                  hover:-translate-y-2 hover:shadow-glow-gold
-                  border ${isMoonBoosted ? 'border-mystic-gold/40 shadow-[0_0_20px_rgba(212,175,55,0.15)] bg-mystic-gold/5' : 'border-white/5 hover:border-mystic-gold/30'}
+                  hover:-translate-y-2 hover:scale-[1.02] hover:shadow-glow-gold hover:bg-mystic-gold/5
+                  border ${isMoonBoosted ? 'border-mystic-gold/40 shadow-[0_0_20px_rgba(212,175,55,0.15)] bg-mystic-gold/5' : 'border-white/5 hover:border-mystic-gold/40'}
                   overflow-hidden
                 `}
               >
@@ -106,28 +110,29 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
                 )}
 
                 {/* Subtle Background Radial on Hover */}
-                <div className="absolute inset-0 bg-glow-radial opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <div className="absolute inset-0 bg-glow-radial opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
                 
-                {/* Decorative Corners */}
-                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/10 opacity-30 group-hover:opacity-100 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-tl-sm"></div>
-                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/10 opacity-30 group-hover:opacity-100 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-br-sm"></div>
+                {/* Decorative Corners - Only appear on hover */}
+                <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-mystic-gold/0 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-tl-sm"></div>
+                <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-mystic-gold/0 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-br-sm"></div>
 
                 <div className="relative z-10 flex flex-col items-center gap-5">
                   <div className={`
                     p-4 rounded-full 
                     bg-gradient-to-br from-white/5 to-transparent 
                     border ${isMoonBoosted ? 'border-mystic-gold/30' : 'border-white/5'} 
-                    group-hover:border-mystic-gold/40
+                    group-hover:border-mystic-gold/50
                     shadow-inner-light
                     transition-all duration-700 
                     group-hover:scale-110 
-                    group-hover:shadow-[0_0_30px_rgba(212,175,55,0.1)]
+                    group-hover:shadow-[0_0_25px_rgba(212,175,55,0.25)]
+                    group-hover:bg-mystic-gold/10
                   `}>
-                    <GetIcon name={portal.icon} className={`w-6 h-6 transition-colors duration-500 ${iconColorClass}`} />
+                    <GetIcon name={portal.icon} className={`w-6 h-6 transition-all duration-500 ${iconColorClass}`} />
                   </div>
                   
                   <div className="flex flex-col gap-1">
-                    <span className="font-serif text-mystic-ethereal/90 text-[10px] md:text-xs tracking-[0.25em] uppercase group-hover:text-mystic-gold transition-colors duration-500">
+                    <span className="font-serif text-mystic-ethereal/70 text-[10px] md:text-xs tracking-[0.25em] uppercase group-hover:text-mystic-gold group-hover:font-medium transition-all duration-500 drop-shadow-sm">
                         {portal.title}
                     </span>
                   </div>

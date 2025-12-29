@@ -311,12 +311,13 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
          visualSubject = `The integration of shadow and light, jungian psychology art, eclipse, ethereal, dark and gold contrast`;
     }
     else if (portal.id === 'tzolkin' && finalText) {
-         // TZOLKIN VISUAL TRIGGER (Refined)
          const kinData = calculateTzolkinKin(finalText);
          if (kinData) {
-            visualSubject = `Mystical artistic representation of the Mayan Seal ${kinData.seal} colored ${kinData.color}. Ancient stone texture, bioluminescent glow, sacred geometry background, cinematic lighting, 8k, unreal engine 5 style, deep spiritual atmosphere.`;
+            // Translating colors/context for better image generation prompts
+            // Creates a "Dark Luxo" version of the Glyph
+            visualSubject = `A masterpiece 3D render of the Mayan Glyph '${kinData.seal}' glowing in ethereal ${kinData.color} energy. The glyph is carved into a polished black obsidian monolith with intricate antique gold inlays. Cinematic lighting, dark void background with floating dust particles, mystical atmosphere, hyper-realistic, 8k resolution.`;
          } else {
-            visualSubject = `Ancient Mayan Tzolkin Glyph carved in golden obsidian stone, mystical symbols, aztec patterns, divine calendar, cinematic lighting`;
+            visualSubject = `Ancient Mayan Tzolkin Calendar wheel carved in black obsidian with glowing gold details, cinematic lighting, mystical atmosphere.`;
          }
     }
     else if (portal.id === 'numeros') {
@@ -636,8 +637,9 @@ const PortalView: React.FC<Props> = ({ portal, user, onClose, initialInput }) =>
 
         {status !== 'REVEALED' && status !== 'THINKING' && (
             <>
-                <h2 className="text-3xl font-serif text-mystic-ethereal tracking-[0.25em] mb-3 text-center drop-shadow-md">{portal.title}</h2>
-                <p className="text-mystic-ethereal/50 font-sans text-sm font-light text-center mb-8 tracking-[0.1em] uppercase max-w-xs">{portal.description}</p>
+                <h2 className="text-4xl md:text-5xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-mystic-gold to-mystic-amber tracking-[0.25em] mb-4 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium animate-fade-in">{portal.title}</h2>
+                <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-mystic-gold/50 to-transparent mb-6 animate-fade-in"></div>
+                <p className="text-mystic-ethereal/80 font-sans text-sm font-light text-center mb-8 tracking-[0.15em] uppercase max-w-xs leading-relaxed animate-fade-in" style={{animationDelay: '0.1s'}}>{portal.description}</p>
             </>
         )}
 
