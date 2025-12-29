@@ -15,7 +15,7 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
   const [quest, setQuest] = useState('');
   const [step, setStep] = useState(1);
 
-  // Define max date as today to prevent future years
+  // Define max date as today
   const maxDate = new Date().toISOString().split('T')[0];
 
   const handleNext = () => {
@@ -34,6 +34,12 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isStepValid()) {
+        handleNext();
+    }
+  }
+
   const isStepValid = () => {
     if (step === 1) return name.length > 2;
     if (step === 2) return true; // Birthdate optional
@@ -43,131 +49,151 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-mystic-dark">
-      {/* --- Harmonious Deep Background --- */}
       
-      {/* 1. Base Layer: Warm Void */}
-      <div className="absolute inset-0 bg-[#050406] z-[-2]"></div>
-
-      {/* 2. Central Glow: Diffused Antique Gold (Subtle) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] md:w-[600px] md:h-[600px] bg-[radial-gradient(circle_at_center,_rgba(170,119,28,0.08)_0%,_transparent_70%)] blur-[80px] z-[-1] pointer-events-none animate-pulse-slow"></div>
-
-      {/* 3. Bottom Accent: Deep Amber Rise */}
-      <div className="absolute bottom-[-10%] left-0 right-0 h-[40vh] bg-gradient-to-t from-[#1a1205] to-transparent opacity-60 z-[-1] pointer-events-none"></div>
+      {/* --- Ambient Background Layers --- */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-mystic-deep)_0%,_#000000_100%)] z-0 pointer-events-none"></div>
       
-      {/* 4. Top Accent: Ethereal Mist */}
-      <div className="absolute top-[-10%] left-0 right-0 h-[30vh] bg-gradient-to-b from-[#111111] to-transparent opacity-40 z-[-1] pointer-events-none"></div>
+      {/* Central Nebula */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-mystic-gold/5 rounded-full blur-[120px] animate-pulse-slow pointer-events-none z-0"></div>
 
-      {/* 5. Subtle Dust/Stars */}
-      <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-mystic-gold rounded-full blur-[1px] opacity-30 animate-pulse"></div>
-      <div className="absolute bottom-1/4 left-1/5 w-1 h-1 bg-white rounded-full blur-[1px] opacity-10 animate-pulse-slow"></div>
-
-      
-      <div className="max-w-md w-full animate-fade-in z-10 flex flex-col items-center">
+      {/* Content Container */}
+      <div className="relative z-10 w-full max-w-lg flex flex-col items-center transition-all duration-1000">
         
-        {/* Header Section */}
-        <div className="text-center mb-12 flex flex-col items-center">
-          <div className="relative mb-8 group cursor-default">
-             {/* Logo Backlight - Breathing independently */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-mystic-gold/10 rounded-full blur-[40px] animate-pulse-slow pointer-events-none"></div>
-             
-             {/* The Animated Logo */}
-             <Logo className="w-24 h-24 text-mystic-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" />
-          </div>
-          
-          <h1 className="font-serif text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b from-[#EBEAE4] via-[#D4AF37] to-[#785915] tracking-[0.3em] mb-3 drop-shadow-sm text-center pl-3">
-            ORÁCULO<span className="text-[#AA771C] font-light">7</span>
-          </h1>
-          
-          <div className="flex items-center justify-center gap-4 opacity-60 mt-2">
-             <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-mystic-gold/50"></div>
-             <p className="text-[#C0C0C0] text-[9px] font-sans tracking-[0.6em] uppercase">Iniciação</p>
-             <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-mystic-gold/50"></div>
-          </div>
+        {/* Header: Logo & Identity */}
+        <div className={`flex flex-col items-center mb-16 transition-transform duration-700 ${step > 1 ? 'scale-90 opacity-80' : 'scale-100'}`}>
+           <div className="relative mb-8">
+              <div className="absolute inset-0 bg-mystic-gold/20 blur-[30px] rounded-full animate-pulse-slow"></div>
+              <Logo className="w-20 h-20 text-mystic-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)] relative z-10" />
+           </div>
+           
+           <h1 className="font-serif text-4xl md:text-5xl tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-b from-mystic-ethereal via-mystic-gold to-mystic-amber text-center pl-4 drop-shadow-sm">
+             ORÁCULO<span className="text-mystic-gold font-light">7</span>
+           </h1>
+           <div className="mt-4 flex items-center gap-4 opacity-50">
+              <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-mystic-gold"></div>
+              <span className="text-[9px] font-sans tracking-[0.5em] uppercase text-mystic-ethereal">Iniciação</span>
+              <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-mystic-gold"></div>
+           </div>
         </div>
 
-        {/* Interaction Card */}
-        <div className="w-full glass-panel rounded-[2rem] p-10 border border-white/5 bg-gradient-to-b from-[#0a0a0a]/80 to-[#050505]/90 transform transition-all duration-700 relative overflow-hidden">
-          
-          {/* Top light reflection */}
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-mystic-gold/20 to-transparent"></div>
-
-          {step === 1 && (
-            <div className="space-y-10 animate-fade-in">
-              <label className="block text-center font-serif text-xl text-mystic-ethereal tracking-widest uppercase opacity-90">Como deseja ser chamado?</label>
-              <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-mystic-gold/0 via-mystic-gold/10 to-mystic-gold/0 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-1000"></div>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Digite seu nome..."
-                    className="relative w-full bg-[#0E0E0E] border border-white/10 rounded-xl py-6 px-4 text-center text-mystic-gold text-2xl font-reading italic focus:outline-none focus:border-mystic-gold/30 focus:bg-[#151515] focus:shadow-glow-gold transition-all duration-500 placeholder-white/10"
-                    autoFocus
-                  />
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-10 animate-fade-in">
-              <label className="block text-center font-serif text-xl text-mystic-ethereal tracking-widest uppercase opacity-90">Quando sua jornada começou?</label>
-              <div className="relative group">
-                <input
-                  type="date"
-                  value={birthDate}
-                  min="1900-01-01"
-                  max={maxDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full bg-[#0E0E0E] border border-white/10 rounded-xl py-6 px-4 text-center text-mystic-gold text-2xl font-reading focus:outline-none focus:border-mystic-gold/30 focus:shadow-glow-gold transition-all duration-500 [color-scheme:dark] uppercase tracking-widest cursor-pointer hover:bg-[#151515]"
-                />
-                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-30 group-hover:text-mystic-gold transition-colors">
-                    <GetIcon name="Star" className="w-3 h-3" />
+        {/* Input Card Area */}
+        <div className="w-full min-h-[300px] flex flex-col items-center relative">
+            
+            {/* Step 1: Name */}
+            {step === 1 && (
+                <div className="w-full animate-fade-in flex flex-col items-center">
+                    <label className="text-mystic-ethereal/60 font-sans text-xs tracking-[0.4em] uppercase mb-8">
+                        Como a energia lhe reconhece?
+                    </label>
+                    <div className="relative w-full group">
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Seu Nome"
+                            className="w-full bg-transparent border-b border-white/10 py-4 text-center text-3xl md:text-4xl text-mystic-gold font-reading italic focus:outline-none focus:border-mystic-gold/50 transition-all duration-500 placeholder-white/5"
+                            autoFocus
+                        />
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-mystic-gold group-hover:w-1/2 transition-all duration-700 opacity-50"></div>
+                    </div>
                 </div>
-                <p className="text-[9px] text-center text-white/20 mt-4 uppercase tracking-[0.3em] font-sans">(Data de Nascimento - Opcional)</p>
-              </div>
-            </div>
-          )}
+            )}
 
-          {step === 3 && (
-            <div className="space-y-10 animate-fade-in">
-              <label className="block text-center font-serif text-xl text-mystic-ethereal tracking-widest uppercase opacity-90">O que busca neste momento?</label>
-              <div className="relative group">
-                 <div className="absolute -inset-1 bg-gradient-to-r from-mystic-gold/0 via-mystic-gold/10 to-mystic-gold/0 rounded-lg blur opacity-0 group-hover:opacity-100 transition duration-1000"></div>
-                 <textarea
-                    value={quest}
-                    onChange={(e) => setQuest(e.target.value)}
-                    placeholder="Clareza, propósito, paz interior..."
-                    rows={2}
-                    className="relative w-full bg-[#0E0E0E] border border-white/10 rounded-xl p-6 text-center text-mystic-gold text-2xl font-reading italic focus:outline-none focus:border-mystic-gold/30 focus:bg-[#151515] focus:shadow-glow-gold transition-all duration-500 placeholder-white/10 resize-none leading-relaxed"
-                    autoFocus
-                  />
-              </div>
-            </div>
-          )}
+            {/* Step 2: Birth Date */}
+            {step === 2 && (
+                <div className="w-full animate-fade-in flex flex-col items-center">
+                    <label className="text-mystic-ethereal/60 font-sans text-xs tracking-[0.4em] uppercase mb-8">
+                        Seu marco temporal de chegada
+                    </label>
+                    <div className="relative w-full">
+                        <input
+                            type="date"
+                            value={birthDate}
+                            max={maxDate}
+                            onChange={(e) => setBirthDate(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="w-full bg-transparent border-b border-white/10 py-4 text-center text-2xl md:text-3xl text-mystic-gold font-reading focus:outline-none focus:border-mystic-gold/50 transition-all duration-500 [color-scheme:dark] uppercase tracking-widest cursor-pointer hover:bg-white/5 rounded-t-lg"
+                        />
+                    </div>
+                    <p className="mt-4 text-[9px] text-white/20 font-sans tracking-[0.2em] uppercase">
+                        (Opcional • Para cálculos astrais)
+                    </p>
+                </div>
+            )}
 
-          <div className="mt-14 flex justify-center">
-            <button
-              onClick={handleNext}
-              onMouseEnter={() => soundManager.playHover()}
-              disabled={!isStepValid()}
-              className={`
-                px-10 py-3 rounded-full font-serif tracking-[0.3em] text-[10px] transition-all duration-700 relative overflow-hidden group uppercase border
-                ${isStepValid() 
-                  ? 'bg-mystic-gold/5 border-mystic-gold/40 text-mystic-gold hover:bg-mystic-gold/10 hover:border-mystic-gold hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] hover:scale-105' 
-                  : 'bg-transparent border-white/5 text-white/10 cursor-not-allowed'}
-              `}
-            >
-              <span className="relative z-10">{step === 3 ? 'ATIVAR PORTAL' : 'CONTINUAR'}</span>
-              {isStepValid() && <div className="absolute inset-0 bg-mystic-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>}
-            </button>
-          </div>
-          
-          <div className="mt-10 flex justify-center gap-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className={`h-[2px] rounded-full transition-all duration-1000 ${i <= step ? 'w-6 bg-mystic-gold/80 shadow-[0_0_8px_rgba(212,175,55,0.6)]' : 'w-2 bg-white/5'}`} />
-            ))}
-          </div>
+            {/* Step 3: Quest */}
+            {step === 3 && (
+                <div className="w-full animate-fade-in flex flex-col items-center">
+                    <label className="text-mystic-ethereal/60 font-sans text-xs tracking-[0.4em] uppercase mb-8">
+                        Qual a sua busca sagrada?
+                    </label>
+                    <div className="relative w-full group">
+                        <textarea
+                            value={quest}
+                            onChange={(e) => setQuest(e.target.value)}
+                            onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if(isStepValid()) handleNext(); } }}
+                            placeholder="Clareza, propósito, cura..."
+                            rows={2}
+                            className="w-full bg-transparent border-b border-white/10 py-4 text-center text-2xl md:text-3xl text-mystic-gold font-reading italic focus:outline-none focus:border-mystic-gold/50 transition-all duration-500 placeholder-white/5 resize-none leading-relaxed"
+                            autoFocus
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Navigation Controls */}
+            <div className="mt-16 flex flex-col items-center gap-8 w-full">
+                
+                {/* Primary Action Button */}
+                <button
+                    onClick={handleNext}
+                    onMouseEnter={() => soundManager.playHover()}
+                    disabled={!isStepValid()}
+                    className={`
+                        group relative px-12 py-4 rounded-full transition-all duration-700
+                        ${isStepValid() 
+                            ? 'cursor-pointer' 
+                            : 'cursor-not-allowed opacity-30 blur-[1px]'}
+                    `}
+                >
+                    {/* Button Background & Border */}
+                    <div className="absolute inset-0 rounded-full border border-mystic-gold/30 bg-mystic-gold/5 group-hover:bg-mystic-gold/10 group-hover:border-mystic-gold/60 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.5)]"></div>
+                    
+                    {/* Inner Glow on Hover */}
+                    <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.2)_0%,_transparent_70%)] transition-opacity duration-500 blur-md"></div>
+
+                    {/* Button Text */}
+                    <span className={`relative z-10 font-serif text-xs tracking-[0.3em] uppercase transition-colors duration-300 ${isStepValid() ? 'text-mystic-gold group-hover:text-white' : 'text-white/40'}`}>
+                        {step === 3 ? 'Abrir Portal' : 'Continuar'}
+                    </span>
+                </button>
+
+                {/* Elegant Progress Dots */}
+                <div className="flex gap-4 items-center">
+                    {[1, 2, 3].map((i) => (
+                        <div 
+                            key={i} 
+                            className={`transition-all duration-700 rounded-full 
+                                ${i === step 
+                                    ? 'w-2 h-2 bg-mystic-gold shadow-[0_0_8px_rgba(212,175,55,0.8)]' 
+                                    : i < step 
+                                        ? 'w-1.5 h-1.5 bg-mystic-gold/40' 
+                                        : 'w-1 h-1 bg-white/10'
+                                }
+                            `}
+                        />
+                    ))}
+                </div>
+            </div>
+
         </div>
+
+        {/* Footer Ambient Text */}
+        <div className="absolute bottom-6 text-[9px] font-sans tracking-[0.4em] text-white/10 uppercase select-none pointer-events-none">
+            Sintonia v7.0
+        </div>
+
       </div>
     </div>
   );

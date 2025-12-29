@@ -1,3 +1,4 @@
+
 // Motor de Áudio Processual para o Oráculo 7
 // Atualizado: SFX Harmônicos + Drone Binaural + WAV Encoder
 
@@ -271,27 +272,33 @@ class SoundManager {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     
+    // Configuração para "Gota d'água Etérea"
     osc.type = 'sine'; 
-    osc.frequency.setValueAtTime(160, t);
-    osc.frequency.linearRampToValueAtTime(175, t + 0.3);
     
+    // Frequência descende suavemente (Efeito Doppler/Gravidade)
+    // Começa em ~180Hz e cai para ~120Hz para dar peso e suavidade
+    osc.frequency.setValueAtTime(180, t);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.6);
+    
+    // Envelope Suave (Sem clique inicial)
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.04, t + 0.15); 
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5); 
+    gain.gain.linearRampToValueAtTime(0.06, t + 0.15); // Ataque lento (150ms)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6); // Decaimento longo
     
     osc.connect(gain);
     gain.connect(this.masterGain);
     
+    // Reverb Alto para sensação de espaço
     if (this.reverbNode) {
         const reverbSend = this.ctx.createGain();
-        reverbSend.gain.value = 0.35; 
+        reverbSend.gain.value = 0.5; // Reverb bem presente
         osc.connect(reverbSend);
         reverbSend.connect(this.reverbNode);
         this.reverbNode.connect(this.masterGain);
     }
 
     osc.start(t);
-    osc.stop(t + 0.6);
+    osc.stop(t + 0.7);
   }
 
   public playClick() {

@@ -12,6 +12,7 @@ import UniverseConsultant from './components/UniverseConsultant';
 import TarotGrimoire from './components/TarotGrimoire';
 import MetatronView from './components/MetatronView';
 import { GetIcon } from './components/Icons';
+import { Logo } from './components/Logo';
 import StarField from './components/StarField';
 
 const App: React.FC = () => {
@@ -22,6 +23,9 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isMuted, setIsMuted] = useState(soundManager.getMuteState());
   const [isAmbient, setIsAmbient] = useState(soundManager.getAmbientState());
+  
+  // Transition State: 'idle' (hidden), 'active' (covering screen)
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     // Set dynamic colors based on time of day
@@ -58,39 +62,64 @@ const App: React.FC = () => {
       setIsAmbient(newState);
   };
 
+  // --- MYSTIC TRANSITION HANDLER ---
+  const navigateWithTransition = (callback: () => void) => {
+      soundManager.playTransition();
+      setIsTransitioning(true); // Fade In Overlay
+      
+      // Wait for cover up
+      setTimeout(() => {
+          callback(); // Change the actual View state
+          window.scrollTo(0, 0); // Reset scroll
+          
+          // Wait a brief moment in the void before revealing
+          setTimeout(() => {
+              setIsTransitioning(false); // Fade Out Overlay
+          }, 600);
+          
+      }, 800); // Duration matches CSS transition
+  };
+
   const handleOnboardingComplete = (newProfile: UserProfile) => {
     setProfile(newProfile);
-    soundManager.playReveal(); // Celebration sound
-    setView('DASHBOARD');
+    soundManager.playReveal(); 
+    navigateWithTransition(() => setView('DASHBOARD'));
   };
 
   const handlePortalSelect = (portal: PortalConfig) => {
-    soundManager.playTransition();
-    setActivePortal(portal);
-    setPreselectedInput(undefined); // Reset specific input
-    setView('PORTAL');
+    navigateWithTransition(() => {
+        setActivePortal(portal);
+        setPreselectedInput(undefined); 
+        setView('PORTAL');
+    });
   };
 
   const handleClosePortal = () => {
     soundManager.playClick();
-    setActivePortal(null);
-    setPreselectedInput(undefined);
-    setView('DASHBOARD');
+    navigateWithTransition(() => {
+        setActivePortal(null);
+        setPreselectedInput(undefined);
+        setView('DASHBOARD');
+    });
   };
 
   const handleViewChange = (newView: ViewState) => {
-      soundManager.playTransition();
-      setView(newView);
+      // Small logic to prevent redundant transitions
+      if (view === newView) return;
+      
+      navigateWithTransition(() => {
+          setView(newView);
+      });
   }
 
   const handleGrimoireSelection = (cardName: string) => {
-      // Find the Tarot portal config
       const tarotPortal = PORTALS.find(p => p.id === 'tarot');
       if (tarotPortal) {
-          setActivePortal(tarotPortal);
-          setPreselectedInput(cardName);
-          soundManager.playTransition();
-          setView('PORTAL');
+          navigateWithTransition(() => {
+              setActivePortal(tarotPortal);
+              setPreselectedInput(cardName);
+              setView('PORTAL');
+          });
       }
   };
 
@@ -102,6 +131,18 @@ const App: React.FC = () => {
     <>
       <StarField />
       
+      {/* --- MYSTIC TRANSITION OVERLAY --- */}
+      {/* This element sits on top of everything (z-[100]) and fades in/out to mask View changes */}
+      <div 
+        className={`fixed inset-0 z-[100] bg-[#03000a] flex items-center justify-center transition-opacity duration-700 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      >
+          {/* Visuals inside the void */}
+          <div className={`relative transition-transform duration-1000 ${isTransitioning ? 'scale-100' : 'scale-150'}`}>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-mystic-gold/10 rounded-full blur-[50px] animate-pulse-slow"></div>
+              <Logo className="w-20 h-20 text-mystic-gold opacity-80 animate-spin-slow" />
+          </div>
+      </div>
+
       {/* Sound Controls */}
       <div className="fixed top-6 right-6 z-[60] flex gap-2">
         <button 
