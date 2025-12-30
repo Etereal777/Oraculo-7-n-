@@ -42,4 +42,13 @@ export interface Reading {
   notes?: string; // Journaling field
 }
 
-export type ViewState = 'ONBOARDING' | 'DASHBOARD' | 'PORTAL' | 'HISTORY' | 'UNIVERSE' | 'TAROT_GRIMOIRE' | 'METATRON';
+export interface AltarItem {
+    id: string;
+    type: 'CARD' | 'IMAGE' | 'SIGIL' | 'CRYSTAL';
+    name: string;
+    imageUrl?: string;
+    description: string;
+    timestamp: number;
+}
+
+export type ViewState = 'ONBOARDING' | 'DASHBOARD' | 'PORTAL' | 'HISTORY' | 'UNIVERSE' | 'TAROT_GRIMOIRE' | 'METATRON' | 'ALTAR';

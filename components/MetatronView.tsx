@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Icosahedron, Octahedron, Float } from '@react-three/drei';
 import { UserProfile, Reading } from '../types';
 import { consultMetatron, MetatronMode, generateAudioReading } from '../services/geminiService';
 import { saveReading } from '../services/storage';
@@ -8,6 +10,44 @@ import { GetIcon } from './Icons';
 interface Props {
   user: UserProfile;
   onClose: () => void;
+}
+
+// --- 3D SACRED GEOMETRY (Using Three.js) ---
+const SacredGeometry = ({ mode }: { mode: 'IDLE' | 'ANALYZING' }) => {
+    const meshRef = useRef<any>(null);
+    const groupRef = useRef<any>(null);
+
+    useFrame((state, delta) => {
+        if (groupRef.current) {
+            groupRef.current.rotation.y += delta * (mode === 'ANALYZING' ? 2 : 0.2);
+            groupRef.current.rotation.x += delta * (mode === 'ANALYZING' ? 1.5 : 0.1);
+        }
+    });
+
+    return (
+        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+            <group ref={groupRef}>
+                {/* Core */}
+                <Icosahedron args={[1, 0]}>
+                    <meshStandardMaterial 
+                        color={mode === 'ANALYZING' ? "#ffffff" : "#D4AF37"} 
+                        wireframe 
+                        emissive={mode === 'ANALYZING' ? "#ffffff" : "#D4AF37"}
+                        emissiveIntensity={0.5}
+                    />
+                </Icosahedron>
+                {/* Shell */}
+                <Octahedron args={[1.5, 0]}>
+                    <meshStandardMaterial 
+                        color="#1a1a1a" 
+                        wireframe 
+                        transparent 
+                        opacity={0.3} 
+                    />
+                </Octahedron>
+            </group>
+        </Float>
+    )
 }
 
 // --- AUDIO VISUALIZER COMPONENT ---
@@ -34,42 +74,6 @@ const AudioVisualizer: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
         </div>
     );
 };
-
-// Sacred Geometry SVG Component
-const MetatronCube: React.FC<{ className?: string, spinning?: boolean }> = ({ className, spinning }) => (
-    <div className={`relative ${className}`}>
-        <svg viewBox="0 0 100 100" className={`w-full h-full text-mystic-gold opacity-80 ${spinning ? 'animate-[spin_60s_linear_infinite]' : ''}`}>
-            {/* Base Circle */}
-            <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="0.2" className="opacity-30" />
-            
-            {/* Hexagon Outline */}
-            <path d="M50 5 L93.3 30 V80 L50 95 L6.7 80 V30 Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-60" />
-            
-            {/* Inner Triangles/Star */}
-            <path d="M50 5 L50 95 M93.3 30 L6.7 80 M93.3 80 L6.7 30" stroke="currentColor" strokeWidth="0.2" className="opacity-40" />
-            <path d="M50 5 L6.7 80 L93.3 80 Z" fill="none" stroke="currentColor" strokeWidth="0.3" className="opacity-50" />
-            <path d="M50 95 L6.7 30 L93.3 30 Z" fill="none" stroke="currentColor" strokeWidth="0.3" className="opacity-50" />
-            
-            {/* Center */}
-            <circle cx="50" cy="50" r="2" fill="currentColor" className="animate-pulse" />
-            
-            {/* Nodes */}
-            <circle cx="50" cy="5" r="1" fill="currentColor" />
-            <circle cx="93.3" cy="30" r="1" fill="currentColor" />
-            <circle cx="93.3" cy="80" r="1" fill="currentColor" />
-            <circle cx="50" cy="95" r="1" fill="currentColor" />
-            <circle cx="6.7" cy="80" r="1" fill="currentColor" />
-            <circle cx="6.7" cy="30" r="1" fill="currentColor" />
-        </svg>
-        
-        {/* Counter-rotating inner element */}
-        <div className="absolute inset-[25%] opacity-60">
-             <svg viewBox="0 0 100 100" className={`w-full h-full text-mystic-gold ${spinning ? 'animate-[spin_30s_linear_infinite_reverse]' : ''}`}>
-                 <path d="M50 10 L85 70 H15 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
-             </svg>
-        </div>
-    </div>
-);
 
 const MetatronView: React.FC<Props> = ({ user, onClose }) => {
   const [status, setStatus] = useState<'IDLE' | 'ANALYZING' | 'REVEALED'>('IDLE');
@@ -183,9 +187,13 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 bg-[#000000] text-mystic-gold flex flex-col items-center justify-center p-6 overflow-hidden">
       
-      {/* Background Geometry Layer */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center">
-          <MetatronCube className="w-[150vw] h-[150vw] md:w-[800px] md:h-[800px] text-[#1a1a1a]" spinning />
+      {/* 3D Background */}
+      <div className="absolute inset-0 z-0 opacity-40">
+          <Canvas camera={{ position: [0, 0, 5] }}>
+              <ambientLight intensity={0.5} />
+              <pointLight position={[10, 10, 10]} />
+              <SacredGeometry mode={status === 'ANALYZING' ? 'ANALYZING' : 'IDLE'} />
+          </Canvas>
       </div>
 
       {/* Header Buttons */}
@@ -199,10 +207,7 @@ const MetatronView: React.FC<Props> = ({ user, onClose }) => {
         
         {/* TITLE BLOCK */}
         <div className={`transition-all duration-1000 flex flex-col items-center ${status === 'IDLE' ? 'mb-16' : 'mb-8 scale-75'}`}>
-             <div className="w-20 h-20 mb-6 relative">
-                 <MetatronCube className="w-full h-full" spinning={status === 'ANALYZING'} />
-             </div>
-             <h1 className="font-serif text-2xl md:text-3xl tracking-[0.4em] uppercase text-mystic-gold text-center">
+             <h1 className="font-serif text-2xl md:text-3xl tracking-[0.4em] uppercase text-mystic-gold text-center drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
                  METATRON
              </h1>
              <div className="w-32 h-[1px] bg-mystic-gold/30 mt-4 mb-2"></div>

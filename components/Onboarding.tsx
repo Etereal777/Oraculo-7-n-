@@ -3,7 +3,6 @@ import { UserProfile } from '../types';
 import { saveProfile } from '../services/storage';
 import { soundManager } from '../services/soundService';
 import { Logo } from './Logo';
-import { GetIcon } from './Icons';
 
 interface Props {
   onComplete: (profile: UserProfile) => void;
@@ -15,8 +14,31 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
   const [quest, setQuest] = useState('');
   const [step, setStep] = useState(1);
 
-  // Define max date as today
-  const maxDate = new Date().toISOString().split('T')[0];
+  // Date Helpers
+  const days = Array.from({length: 31}, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const months = [
+      {val: '01', label: 'Janeiro'}, {val: '02', label: 'Fevereiro'}, {val: '03', label: 'Março'}, 
+      {val: '04', label: 'Abril'}, {val: '05', label: 'Maio'}, {val: '06', label: 'Junho'},
+      {val: '07', label: 'Julho'}, {val: '08', label: 'Agosto'}, {val: '09', label: 'Setembro'}, 
+      {val: '10', label: 'Outubro'}, {val: '11', label: 'Novembro'}, {val: '12', label: 'Dezembro'}
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({length: 100}, (_, i) => (currentYear - i).toString());
+
+  // Parse current selection
+  const [selYear, selMonth, selDay] = birthDate ? birthDate.split('-') : ['', '', ''];
+
+  const handleDatePartChange = (part: 'day' | 'month' | 'year', val: string) => {
+      let y = selYear || '2000';
+      let m = selMonth || '01';
+      let d = selDay || '01';
+      
+      if (part === 'day') d = val;
+      if (part === 'month') m = val;
+      if (part === 'year') y = val;
+
+      setBirthDate(`${y}-${m}-${d}`);
+  };
 
   const handleNext = () => {
     soundManager.playClick();
@@ -100,23 +122,63 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
                 </div>
             )}
 
-            {/* Step 2: Birth Date */}
+            {/* Step 2: Birth Date (Custom Selects) */}
             {step === 2 && (
                 <div className="w-full animate-fade-in flex flex-col items-center">
                     <label className="text-mystic-ethereal/60 font-sans text-xs tracking-[0.4em] uppercase mb-8">
                         Seu marco temporal de chegada
                     </label>
-                    <div className="relative w-full">
-                        <input
-                            type="date"
-                            value={birthDate}
-                            max={maxDate}
-                            onChange={(e) => setBirthDate(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="w-full bg-transparent border-b border-white/10 py-4 text-center text-2xl md:text-3xl text-mystic-gold font-reading focus:outline-none focus:border-mystic-gold/50 transition-all duration-500 [color-scheme:dark] uppercase tracking-widest cursor-pointer hover:bg-white/5 rounded-t-lg"
-                        />
+                    
+                    <div className="w-full flex flex-col gap-4 max-w-sm">
+                        <div className="flex gap-4">
+                            {/* Day Selector */}
+                            <div className="relative w-1/3 group">
+                                <select
+                                    value={selDay}
+                                    onChange={(e) => handleDatePartChange('day', e.target.value)}
+                                    className="w-full appearance-none bg-transparent border-b border-white/10 py-3 text-center text-xl md:text-2xl text-mystic-gold font-reading focus:outline-none focus:border-mystic-gold/50 transition-all rounded-none cursor-pointer"
+                                >
+                                    <option value="" disabled className="bg-mystic-dark text-gray-500">Dia</option>
+                                    {days.map(d => <option key={d} value={d} className="bg-mystic-dark text-mystic-gold">{d}</option>)}
+                                </select>
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover:text-mystic-gold/50 transition-colors">
+                                   <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                            </div>
+
+                            {/* Month Selector */}
+                            <div className="relative w-2/3 group">
+                                <select
+                                    value={selMonth}
+                                    onChange={(e) => handleDatePartChange('month', e.target.value)}
+                                    className="w-full appearance-none bg-transparent border-b border-white/10 py-3 text-center text-xl md:text-2xl text-mystic-gold font-reading focus:outline-none focus:border-mystic-gold/50 transition-all rounded-none cursor-pointer"
+                                >
+                                    <option value="" disabled className="bg-mystic-dark text-gray-500">Mês</option>
+                                    {months.map(m => <option key={m.val} value={m.val} className="bg-mystic-dark text-mystic-gold">{m.label}</option>)}
+                                </select>
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover:text-mystic-gold/50 transition-colors">
+                                   <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Year Selector */}
+                        <div className="relative w-full group">
+                             <select
+                                value={selYear}
+                                onChange={(e) => handleDatePartChange('year', e.target.value)}
+                                className="w-full appearance-none bg-transparent border-b border-white/10 py-3 text-center text-xl md:text-2xl text-mystic-gold font-reading focus:outline-none focus:border-mystic-gold/50 transition-all rounded-none tracking-widest cursor-pointer"
+                            >
+                                <option value="" disabled className="bg-mystic-dark text-gray-500">Ano</option>
+                                {years.map(y => <option key={y} value={y} className="bg-mystic-dark text-mystic-gold">{y}</option>)}
+                            </select>
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-white/10 group-hover:text-mystic-gold/50 transition-colors">
+                               <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            </div>
+                        </div>
                     </div>
-                    <p className="mt-4 text-[9px] text-white/20 font-sans tracking-[0.2em] uppercase">
+                    
+                    <p className="mt-12 text-[9px] text-white/20 font-sans tracking-[0.2em] uppercase">
                         (Opcional • Para cálculos astrais)
                     </p>
                 </div>
@@ -190,8 +252,9 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
         </div>
 
         {/* Footer Ambient Text */}
-        <div className="absolute bottom-6 text-[9px] font-sans tracking-[0.4em] text-white/10 uppercase select-none pointer-events-none">
-            Sintonia v7.0
+        <div className="absolute bottom-4 w-full flex flex-col items-center gap-1 text-[8px] md:text-[9px] font-sans tracking-[0.2em] text-white/10 uppercase select-none pointer-events-none z-20">
+            <span>Sintonia v7.0</span>
+            <span>Todos os direitos reservados André Miguel Herman 2025</span>
         </div>
 
       </div>

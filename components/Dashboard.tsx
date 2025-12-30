@@ -4,6 +4,7 @@ import { PORTALS } from '../constants';
 import { GetIcon } from './Icons';
 import { Logo } from './Logo';
 import { generateDailyPhrase, getMoonPhase } from '../services/geminiService';
+import { getCurrentEphemeris, PlanetaryPosition } from '../services/astronomyService';
 import { soundManager } from '../services/soundService';
 
 interface Props {
@@ -13,11 +14,13 @@ interface Props {
   onOpenUniverse: () => void;
   onOpenGrimoire: () => void;
   onOpenMetatron: () => void;
+  onOpenAltar: () => void;
 }
 
-const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpenUniverse, onOpenGrimoire, onOpenMetatron }) => {
+const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpenUniverse, onOpenGrimoire, onOpenMetatron, onOpenAltar }) => {
   const [dailyPhrase, setDailyPhrase] = useState("Sintonizando energias...");
   const [moonPhase, setMoonPhase] = useState("");
+  const [ephemeris, setEphemeris] = useState<PlanetaryPosition[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -27,12 +30,12 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
     });
 
     setMoonPhase(getMoonPhase());
+    setEphemeris(getCurrentEphemeris());
 
     return () => { mounted = false; };
   }, [user.name]);
 
   const getMoonAffinity = (portalId: string, currentMoon: string) => {
-      // Logic to highlight portals based on moon
       if (currentMoon.includes("Nova")) return ['intencao', 'semente_estelar'].includes(portalId);
       if (currentMoon.includes("Crescente")) return ['elemento', 'numeros', 'mapa'].includes(portalId);
       if (currentMoon.includes("Cheia")) return ['tarot', 'visao', 'vibracao', 'chakra'].includes(portalId);
@@ -42,7 +45,6 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
 
   const renderSection = (category: PortalCategory) => {
     const portals = PORTALS.filter(p => p.category === category);
-    
     let titleColor = 'text-mystic-ethereal/40';
     let containerClass = 'gap-4';
 
@@ -63,21 +65,15 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
         
         <div className={`flex flex-wrap justify-center ${containerClass}`}>
           {portals.map(portal => {
-            // UNIFIED COLOR PALETTE STRATEGY FOR HOVER
-            // Base colors remain distinct, but HOVER unifies to GOLD/AMBER as requested.
             let iconColorClass = 'text-mystic-ethereal/60 group-hover:text-mystic-gold group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]'; 
             
             if (['tarot', 'tzolkin', 'oraculo', 'intencao'].includes(portal.id)) {
-                // Pure Gold Base -> Bright Amber Hover
                 iconColorClass = 'text-mystic-gold/70 group-hover:text-amber-200 group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.6)]'; 
             } else if (['sombra', 'sonhos', 'peregrinacao', 'visao'].includes(portal.id)) {
-                // Indigo Base -> Mystic Gold Hover
                 iconColorClass = 'text-indigo-300/60 group-hover:text-mystic-gold'; 
-            } else if (['semente_estelar', 'vibracao', 'elemento', 'ciclo'].includes(portal.id)) {
-                // Blue Base -> Pale Gold Hover
+            } else if (['semente_estelar', 'vibracao', 'elemento', 'ciclo', 'ressonancia'].includes(portal.id)) {
                 iconColorClass = 'text-blue-200/60 group-hover:text-amber-100'; 
             } else if (['mapa', 'numeros', 'chakra'].includes(portal.id)) {
-                // Earthy Base -> Bright Gold Hover
                 iconColorClass = 'text-amber-700/60 group-hover:text-amber-300'; 
             }
 
@@ -102,20 +98,13 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
                   overflow-hidden
                 `}
               >
-                {/* Moon Boost Indicator */}
                 {isMoonBoosted && (
                     <div className="absolute top-2 right-2 flex items-center gap-1 opacity-70 animate-pulse">
                         <GetIcon name="Moon" className="w-2 h-2 text-mystic-gold" />
                     </div>
                 )}
-
-                {/* Subtle Background Radial on Hover */}
                 <div className="absolute inset-0 bg-glow-radial opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
                 
-                {/* Decorative Corners - Only appear on hover */}
-                <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-mystic-gold/0 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-tl-sm"></div>
-                <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-mystic-gold/0 group-hover:border-mystic-gold/50 transition-all duration-500 rounded-br-sm"></div>
-
                 <div className="relative z-10 flex flex-col items-center gap-5">
                   <div className={`
                     p-4 rounded-full 
@@ -145,11 +134,7 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
     );
   };
 
-  // Format date with capitalized month for premium feel: "01 de Janeiro"
-  const dateObj = new Date();
-  const day = dateObj.toLocaleDateString('pt-BR', { day: '2-digit' });
-  const month = dateObj.toLocaleDateString('pt-BR', { month: 'long' });
-  const formattedDate = `${day} de ${month.charAt(0).toUpperCase() + month.slice(1)}`;
+  const formattedDate = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
 
   return (
     <div className="min-h-screen relative pb-32 overflow-x-hidden selection:bg-mystic-gold/30">
@@ -158,7 +143,8 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
 
        <header className="px-6 pt-10 pb-8 max-w-5xl mx-auto relative">
          <div className="flex justify-between items-start animate-fade-in relative z-20">
-            <div className="flex flex-col gap-1 mt-2">
+            <div className="flex flex-col gap-2 mt-2">
+               {/* Date & Moon */}
               <div className="flex items-center gap-4 text-mystic-ethereal/40 text-[9px] md:text-[10px] font-sans font-medium tracking-[0.3em] uppercase">
                 <span className="flex items-center gap-2">
                    <span className="w-1 h-1 rounded-full bg-mystic-gold/50"></span>
@@ -170,16 +156,27 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
                     {moonPhase}
                 </span>
               </div>
+              
+              {/* Live Ephemeris Ticker */}
+              <div className="overflow-hidden h-4 w-64 md:w-96 relative mask-linear-fade">
+                  <div className="flex gap-6 animate-shimmer absolute whitespace-nowrap text-[8px] font-sans tracking-widest text-white/30 uppercase">
+                      {ephemeris.map((planet, i) => (
+                          <span key={i} className="flex items-center gap-1">
+                              <span className="text-mystic-gold/70">{planet.body}</span> em {planet.sign} {planet.degree}° {planet.retrograde ? '(R)' : ''}
+                          </span>
+                      ))}
+                  </div>
+              </div>
             </div>
             
             <div className="flex gap-3">
                 <button 
-                  onClick={onOpenMetatron}
+                  onClick={onOpenAltar}
                   onMouseEnter={() => soundManager.playHover()}
-                  className="group p-3 rounded-full border border-mystic-gold/10 bg-black/40 text-mystic-gold/50 hover:text-mystic-gold hover:border-mystic-gold/40 transition-all duration-500 shadow-lg hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-                  title="Metatron"
+                  className="group p-3 rounded-full glass-panel text-mystic-ethereal/40 hover:text-mystic-gold hover:border-mystic-gold/20 transition-all duration-500 shadow-lg hover:shadow-glow-gold"
+                  title="Altar"
                 >
-                   <GetIcon name="Hexagon" className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <GetIcon name="Gem" className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 </button>
 
                 <button 
@@ -240,26 +237,46 @@ const Dashboard: React.FC<Props> = ({ user, onSelectPortal, onOpenHistory, onOpe
          {renderSection(PortalCategory.DEEP)}
          {renderSection(PortalCategory.SUBTLE)}
          {renderSection(PortalCategory.PRESENCE)}
+
+         <div className="w-full text-center mt-12 mb-8 opacity-20">
+            <p className="text-[8px] font-sans tracking-[0.2em] uppercase text-mystic-ethereal">
+                Todos os direitos reservados André Miguel Herman 2025
+            </p>
+         </div>
        </main>
 
-       <div className="fixed bottom-0 left-0 w-full bg-[#03000a]/95 backdrop-blur-xl border-t border-white/5 p-4 flex justify-around items-center z-40 shadow-[0_-20px_60px_rgba(0,0,0,0.9)]">
-          <div className="flex flex-col items-center gap-2 opacity-100 cursor-pointer group">
-            <div className="p-2.5 rounded-full bg-mystic-gold/10 border border-mystic-gold/30 group-hover:border-mystic-gold/60 transition-colors shadow-glow-gold">
-                 <Logo className="w-5 h-5 text-mystic-gold" />
+       {/* UPDATED FOOTER NAV */}
+       <div className="fixed bottom-0 left-0 w-full bg-[#03000a]/95 backdrop-blur-xl border-t border-white/5 px-6 py-3 flex justify-around items-end z-40 shadow-[0_-20px_60px_rgba(0,0,0,0.9)]">
+          <button 
+            onClick={onOpenMetatron}
+            onMouseEnter={() => soundManager.playHover()}
+            className="group flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-all duration-500 hover:scale-105"
+            title="Acessar Metatron"
+          >
+             <div className="relative p-2">
+                <GetIcon name="Hexagon" className="w-5 h-5 text-mystic-ethereal group-hover:text-mystic-gold transition-colors drop-shadow-[0_0_5px_rgba(212,175,55,0.3)]" />
+                <div className="absolute inset-0 bg-mystic-gold/20 blur-md rounded-full opacity-30 group-hover:opacity-100 transition-opacity animate-pulse-slow"></div>
+             </div>
+             <span className="text-[9px] font-serif tracking-[0.3em] uppercase text-mystic-ethereal group-hover:text-mystic-gold transition-colors">Metatron</span>
+          </button>
+
+          <div className="flex flex-col items-center gap-2 opacity-100 cursor-pointer group mb-1">
+            <div className="p-3.5 rounded-full bg-mystic-gold/10 border border-mystic-gold/30 group-hover:border-mystic-gold/60 transition-colors shadow-glow-gold">
+                 <Logo className="w-6 h-6 text-mystic-gold" />
             </div>
-            <span className="text-[9px] font-serif tracking-[0.3em] uppercase text-mystic-gold drop-shadow-md">Oráculo</span>
+            <span className="text-[10px] font-serif tracking-[0.3em] uppercase text-mystic-gold drop-shadow-md">Oráculo</span>
           </div>
 
           <button 
             onClick={onOpenUniverse}
             onMouseEnter={() => soundManager.playHover()}
-            className="group flex flex-col items-center gap-2 opacity-40 hover:opacity-100 transition-all duration-500 hover:scale-105"
+            className="group flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-all duration-500 hover:scale-105"
           >
              <div className="relative p-2">
                 <GetIcon name="Orbit" className="w-5 h-5 text-mystic-ethereal" />
                 <div className="absolute inset-0 bg-mystic-ethereal/30 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
              </div>
-             <span className="text-[9px] font-serif tracking-[0.3em] uppercase text-mystic-ethereal">O Consultor</span>
+             <span className="text-[9px] font-serif tracking-[0.3em] uppercase text-mystic-ethereal">Consultor</span>
           </button>
        </div>
     </div>

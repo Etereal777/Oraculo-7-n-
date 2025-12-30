@@ -315,6 +315,28 @@ export const generateOracleResponse = async (
   }
 };
 
+export const generateMeditationScript = async (feeling: string): Promise<string> => {
+     const client = createClient();
+     try {
+         const response = await client.models.generateContent({
+             model: 'gemini-2.5-flash',
+             contents: {
+                 parts: [{ text: `
+                    Crie um roteiro de meditação guiada de 2 minutos para alguém que está sentindo: "${feeling}".
+                    Foque em respiração, visualização e relaxamento.
+                    Comece com "Feche os olhos..."
+                    Use Português Brasileiro calmo, suave e acolhedor.
+                    Sem introduções. Apenas o roteiro direto.
+                 `}]
+             },
+             config: { temperature: 0.7 }
+         });
+         return response.text || "Respire fundo e apenas exista.";
+     } catch (e) {
+         return "Feche os olhos. Respire. Sinta o agora.";
+     }
+}
+
 export const generateMysticImage = async (prompt: string): Promise<string | null> => {
     const client = createClient();
     try {

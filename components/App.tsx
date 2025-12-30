@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { UserProfile, PortalConfig, ViewState } from './types';
-import { getProfile } from './services/storage';
-import { soundManager } from './services/soundService';
-import { initializeTheme } from './services/themeService';
-import { PORTALS } from './constants';
+import { UserProfile, PortalConfig, ViewState } from '../types';
+import { getProfile } from '../services/storage';
+import { soundManager } from '../services/soundService';
+import { initializeTheme } from '../services/themeService';
+import { PORTALS } from '../constants';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import PortalView from './components/PortalView';
@@ -11,10 +11,12 @@ import History from './components/History';
 import UniverseConsultant from './components/UniverseConsultant';
 import TarotGrimoire from './components/TarotGrimoire';
 import MetatronView from './components/MetatronView';
+import AltarView from './components/AltarView';
 import { GetIcon } from './components/Icons';
 import { Logo } from './components/Logo';
 import StarField from './components/StarField';
 import SpiritCursor from './components/SpiritCursor';
+import Wormhole from './components/Wormhole';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('ONBOARDING');
@@ -76,9 +78,9 @@ const App: React.FC = () => {
           // Wait a brief moment in the void before revealing
           setTimeout(() => {
               setIsTransitioning(false); // Fade Out Overlay
-          }, 200);
+          }, 800); // Longer hold for wormhole effect
           
-      }, 500); // Duration matches CSS transition
+      }, 800); 
   };
 
   const handleOnboardingComplete = (newProfile: UserProfile) => {
@@ -135,15 +137,15 @@ const App: React.FC = () => {
       {/* Interactive Cursor Trail */}
       <SpiritCursor />
       
-      {/* --- MYSTIC TRANSITION OVERLAY --- */}
-      {/* This element sits on top of everything (z-[100]) and fades in/out to mask View changes */}
+      {/* --- MYSTIC TRANSITION OVERLAY (WORMHOLE) --- */}
       <div 
-        className={`fixed inset-0 z-[100] bg-[#03000a] flex items-center justify-center transition-opacity duration-500 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-[100] bg-[#03000a] flex items-center justify-center transition-opacity duration-700 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       >
+          {isTransitioning && <Wormhole />}
+          
           {/* Visuals inside the void */}
-          <div className={`relative transition-transform duration-1000 ${isTransitioning ? 'scale-100' : 'scale-150'}`}>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-mystic-gold/10 rounded-full blur-[50px] animate-pulse-slow"></div>
-              <Logo className="w-20 h-20 text-mystic-gold opacity-80 animate-spin-slow" />
+          <div className={`relative transition-transform duration-1000 z-[101] ${isTransitioning ? 'scale-100' : 'scale-50'}`}>
+              <Logo className="w-20 h-20 text-mystic-gold opacity-100 animate-spin-slow drop-shadow-[0_0_20px_rgba(212,175,55,0.8)]" />
           </div>
       </div>
 
@@ -178,6 +180,7 @@ const App: React.FC = () => {
           onOpenUniverse={() => handleViewChange('UNIVERSE')}
           onOpenGrimoire={() => handleViewChange('TAROT_GRIMOIRE')}
           onOpenMetatron={() => handleViewChange('METATRON')}
+          onOpenAltar={() => handleViewChange('ALTAR')}
         />
       )}
 
@@ -213,6 +216,10 @@ const App: React.FC = () => {
             user={profile}
             onClose={() => handleViewChange('DASHBOARD')}
           />
+      )}
+
+      {view === 'ALTAR' && (
+          <AltarView onClose={() => handleViewChange('DASHBOARD')} />
       )}
     </>
   );

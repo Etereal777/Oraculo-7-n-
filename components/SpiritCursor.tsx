@@ -14,6 +14,12 @@ const SpiritCursor: React.FC = () => {
   const requestRef = useRef<number>(0);
 
   useEffect(() => {
+    // --- OTIMIZAÇÃO MOBILE ---
+    // Verifica se o dispositivo possui um ponteiro preciso (Mouse/Trackpad).
+    // Dispositivos 'coarse' (Touch) não executarão este efeito para economizar bateria e limpar a UI.
+    const isDesktop = window.matchMedia('(pointer: fine)').matches;
+    if (!isDesktop) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 

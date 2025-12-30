@@ -31,6 +31,15 @@ export const PORTALS: PortalConfig[] = [
     options: ['Raiz (Muladhara)', 'Sacro (Swadhisthana)', 'Plexo Solar (Manipura)', 'Coração (Anahata)', 'Garganta (Vishuddha)', 'Terceiro Olho (Ajna)', 'Coroa (Sahasrara)'],
     promptContext: 'O usuário foca neste Chakra. Explique brevemente o significado emocional e sugira uma visualização de cor ou afirmação simples. Português Brasileiro padrão, culto e sem erros de ortografia.',
   },
+  {
+    id: 'ressonancia',
+    title: 'Ressonância',
+    description: 'Cura pelo som e silêncio.',
+    category: PortalCategory.PRESENCE,
+    icon: 'Waves', // Ondas sonoras
+    inputType: InputType.TEXT, // Usuário digita como quer se sentir
+    promptContext: 'O usuário deseja uma meditação. Este portal usa lógica especial de áudio.',
+  },
 
   // --- Sintonias Sutis ---
   {
